@@ -172,8 +172,8 @@ bool ossimPredatorVideo::open(const ossimFilename& videoFile)
   theImageWidth  = theFormatCtx->streams[theVideoStreamIndex]->codec->width;
   theImageHeight = theFormatCtx->streams[theVideoStreamIndex]->codec->height;
   theVideoFrameRate = av_q2d(theFormatCtx->streams[theVideoStreamIndex]->r_frame_rate);
-  theVideoFrame = avcodec_alloc_frame();
-  theRgbFrame   = avcodec_alloc_frame();
+  theVideoFrame = av_frame_alloc();
+  theRgbFrame   = av_frame_alloc();
   
   theVideoCodecCtx=theFormatCtx->streams[theVideoStreamIndex]->codec;
   theVideoDecoder=avcodec_find_decoder(theVideoCodecCtx->codec_id);
@@ -183,7 +183,7 @@ bool ossimPredatorVideo::open(const ossimFilename& videoFile)
      return false; // Could not open codec
   }
   
-  theBufferSizeInBytes = avpicture_get_size(PIX_FMT_RGB24,
+  theBufferSizeInBytes = avpicture_get_size(AV_PIX_FMT_RGB24,
                                             theImageWidth,
                                             theImageHeight);
   theBuffer = (ossim_uint8 *)av_malloc(theBufferSizeInBytes);
@@ -193,7 +193,7 @@ bool ossimPredatorVideo::open(const ossimFilename& videoFile)
   // of AVPicture
   avpicture_fill((AVPicture *)theRgbFrame,
                  theBuffer,
-                 PIX_FMT_RGB24,
+                 AV_PIX_FMT_RGB24,
                  theImageWidth,
                  theImageHeight);
 
@@ -499,7 +499,7 @@ ossimRefPtr<ossimPredatorVideo::FrameInfo> ossimPredatorVideo::nextFrame()
                                                              theFormatCtx->streams[theVideoStreamIndex]->codec->pix_fmt, 
                                                              dstW,
                                                              dstH,
-                                                             PIX_FMT_RGB24, 
+                                                             AV_PIX_FMT_RGB24,
                                                              SWS_BICUBIC,
                                                              0, 0, 0);
                   }
