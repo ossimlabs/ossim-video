@@ -1,4 +1,5 @@
 PROJECT(ossim-video)
+
 Message("################## Setting up ossim-video library #########################")
 
 INCLUDE(OssimVersion)
