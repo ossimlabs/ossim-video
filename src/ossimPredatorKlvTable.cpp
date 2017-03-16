@@ -1,14 +1,14 @@
 #include <ossimPredator/ossimPredatorKlvTable.h>
 #include <iostream>
-#include <iomanip>
-
+#include <iomanip> 
 #include <ossim/base/ossimTrace.h>
 static const ossimTrace traceDebug("ossimPredatorKlvTable:debug");
 static const  ossimPredatorKlvInfoType OSSIM_PREDATOR_UDS_TABLE[]=
 {
-{KLV_KEY_STREAM_ID,"stream ID",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x01, 0x03, 0x04, 0x02, 0x00, 0x00, 0x00, 0x00}},
+{KLV_KEY_STREAM_ID,"Stream ID",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x01, 0x03, 0x04, 0x02, 0x00, 0x00, 0x00, 0x00}},
 {KLV_KEY_ORGANIZATIONAL_PROGRAM_NUMBER,"Organizational Program Number",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x01, 0x03, 0x05, 0x01, 0x00, 0x00, 0x00, 0x00}},
 {KLV_KEY_UNIX_TIMESTAMP,"UNIX Timestamp",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x04, 0x07, 0x02, 0x01, 0x01, 0x01, 0x05, 0x00, 0x00}}, // TIME STAMP
+{KLV_KEY_UNIX_TIMESTAMP_RAW,"UNIX Timestamp Raw",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x04, 0x07, 0x02, 0x01, 0x01, 0x01, 0x05, 0x00, 0x00}}, // TIME STAMP
 {KLV_KEY_USER_DEFINED_UTC_TIMESTAMP, "User Defined UTC", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x07, 0x02, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00}},
 {KLV_KEY_USER_DEFINED_TIMESTAMP_MICROSECONDS_1970, "User Defined Timestamp Microseconds since 1970", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x07, 0x02, 0x01, 0x01, 0x01, 0x05, 0x00, 0x00}},
 {KLV_KEY_VIDEO_START_DATE_TIME_UTC, "Video Timestamp Start Date and Time",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x07, 0x02, 0x01, 0x02, 0x01, 0x01, 0x00, 0x00}},
@@ -20,17 +20,41 @@ static const  ossimPredatorKlvInfoType OSSIM_PREDATOR_UDS_TABLE[]=
 {KLV_KEY_SECURITY_CLASSIFICATION_SET, "Security Classification Set", {0x06, 0x0E, 0x2B, 0x34, 0x02, 0x01, 0x01, 0x01, 0x02, 0x08, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00}},
 {KLV_KEY_BYTE_ORDER, "Byte Order", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x03, 0x01, 0x02, 0x01, 0x02, 0x00, 0x00, 0x00}},
 {KLV_KEY_MISSION_NUMBER,"Mission Number",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x01, 0x05, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00}},
+// Security tags
 {KLV_KEY_OBJECT_COUNTRY_CODES, "Object Country Codes", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x07, 0x01, 0x20, 0x01, 0x02, 0x01, 0x01, 0x00}},
 {KLV_KEY_SECURITY_CLASSIFICATION, "Security Classification", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x02, 0x08, 0x02, 0x01, 0x00, 0x00, 0x00, 0x00}},
+{KLV_KEY_CLASSIFYING_COUNTRY_AND_RELEASE_INSTRUCTIONS_COUNTRY_CODING_METHOD, "Classifying Country and Releasing Instruction Country Coding Method", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x07, 0x01, 0x20, 0x01, 0x02, 0x07, 0x00, 0x00}},
+{KLV_KEY_CLASSIFYING_COUNTRY, "Classifying Country", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x07, 0x01, 0x20, 0x01, 0x02, 0x08, 0x00, 0x00}},
+{KLV_KEY_SECURITY_INFORMATION, "Security-SCI/SHI Information", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x02, 0x02, 0x00, 0x00}},
 {KLV_KEY_SECURITY_RELEASE_INSTRUCTIONS, "Release Instructions", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x07, 0x01, 0x20, 0x01, 0x02, 0x09, 0x00, 0x00}},
 {KLV_KEY_SECURITY_CAVEATS, "Caveats", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x02, 0x08, 0x02, 0x02, 0x00, 0x00, 0x00, 0x00}},
+{KLV_KEY_CLASSIFIED_BY, "Classified By", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x02, 0x08, 0x02, 0x03, 0x00, 0x00, 0x00, 0x00}},
+{KLV_KEY_DERIVED_FROM, "Derived From", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x02, 0x08, 0x02, 0x06, 0x00, 0x00, 0x00, 0x00}},
+{KLV_KEY_CLASSIFICATION_REASON, "Classification Reason", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x02, 0x08, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00}},
+{KLV_KEY_DECLASSIFICATION_DATE, "Declassification Date", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x02, 0x08, 0x02, 0x05, 0x00, 0x00, 0x00, 0x00}},
+{KLV_KEY_CLASSIFICATION_AND_MARKING_SYSTEM, "Classification and Marking System", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x02, 0x08, 0x02, 0x08, 0x00, 0x00, 0x00, 0x00}},
+{KLV_KEY_OBJECT_COUNTRY_CODING_METHOD, "Object Country Coding Method", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x07, 0x01, 0x20, 0x01, 0x02, 0x06, 0x00, 0x00}},
 {KLV_KEY_CLASSIFICATION_COMMENT, "Classification Comment", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x02, 0x08, 0x02, 0x07, 0x00, 0x00, 0x00, 0x00}},
+// Spec says allowing values for 11th byte are 0x05, 0x06, 0x08, 0x09, 0x0B, 0x0C, 0x0D, 0x0F and 12th byte are 0x10, 0x11, 0x12, 0x20, 0x21, 0x22, using only the first of these as test data uses LDS shortened key and not sure which to use
+{KLV_KEY_UMID1, "UMID1", {0x06, 0x0A, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x05, 0x10, 0x00, 0x00}},
+{KLV_KEY_UMID2, "UMID2", {0x06, 0x0A, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x06, 0x10, 0x00, 0x00}},
+{KLV_KEY_UMID3, "UMID3", {0x06, 0x0A, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x08, 0x10, 0x00, 0x00}},
+{KLV_KEY_UMID4, "UMID4", {0x06, 0x0A, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x09, 0x10, 0x00, 0x00}},
+{KLV_KEY_TRANSPORT_STREAM_ID, "Transport Stream ID", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x01, 0x03, 0x04, 0x03, 0x00, 0x00, 0x00, 0x00}},
+{KLV_KEY_ITEM_DESIGNATOR_ID, "Item Designator ID", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x01, 0x03, 0x06, 0x01, 0x00, 0x00, 0x00, 0x00}},
+{KLV_KEY_SECURITY_VERSION, "Version", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x05, 0x04, 0x00, 0x00, 0x00}},
+{KLV_KEY_CLASSIFYING_COUNTRY_AND_RELEASING_INSTRUCTIONS_COUNTRY_CODE_METHOD_VERSION_DATE, "Classifying Country and Releasing Instructions Country Coding Method Version Date", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x04, 0x03, 0x03, 0x00, 0x00, 0x00}},
+{KLV_KEY_OBJECT_COUNTRY_CODING_METHOD_VERSION_DATE, "Object Country Coding Method Version Date", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x04, 0x03, 0x04, 0x00, 0x00, 0x00}},
+// End Security Tags
 {KLV_KEY_ORIGINAL_PRODUCER_NAME, "Original Producer Name", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x02, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00}},
 {KLV_KEY_PLATFORM_GROUND_SPEED,"Platform Ground Speed",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x01, 0x05, 0x00, 0x00, 0x00}},
 {KLV_KEY_PLATFORM_MAGNETIC_HEADING_ANGLE,"Platform Magnetic Heading Angle",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x01, 0x08, 0x00, 0x00, 0x00}},
 {KLV_KEY_PLATFORM_HEADING_ANGLE,"Platform Heading Angle",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x07, 0x07, 0x01, 0x10, 0x01, 0x06, 0x00, 0x00, 0x00}},
+// In adding LDS support for the next to fields, LDS requires double precision, so duplicating these keys for LDS
 {KLV_KEY_PLATFORM_PITCH_ANGLE,"Platform Pitch Angle",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x07, 0x07, 0x01, 0x10, 0x01, 0x05, 0x00, 0x00, 0x00}},
 {KLV_KEY_PLATFORM_ROLL_ANGLE, "Platform Roll Angle",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x07, 0x07, 0x01, 0x10, 0x01, 0x04, 0x00, 0x00, 0x00}},
+{KLV_KEY_PLATFORM_PITCH_ANGLE_FULL,"Platform Pitch Angle",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x07, 0x07, 0x01, 0x10, 0x01, 0x05, 0x00, 0x00, 0x00}},
+{KLV_KEY_PLATFORM_ROLL_ANGLE_FULL, "Platform Roll Angle",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x07, 0x07, 0x01, 0x10, 0x01, 0x04, 0x00, 0x00, 0x00}},
 {KLV_KEY_INDICATED_AIR_SPEED,"Platform Indicated Air Speed",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x01, 0x0B, 0x00, 0x00, 0x00}},
 {KLV_KEY_PLATFORM_DESIGNATION,"Platform Designation",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x20, 0x01, 0x00, 0x00, 0x00, 0x00}},
 {KLV_KEY_PLATFORM_DESIGNATION2,"Platform Designation",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x01, 0x01, 0x21, 0x01, 0x00, 0x00, 0x00, 0x00}},
@@ -67,6 +91,54 @@ static const  ossimPredatorKlvInfoType OSSIM_PREDATOR_UDS_TABLE[]=
 {KLV_KEY_UAS_LDS_VERSION_NUMBER,"UAS LDS Version Number", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x03, 0x00, 0x00, 0x00}},
 {KLV_KEY_GENERIC_FLAG_DATA_01,"Generic Flag Data 01", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x03, 0x01, 0x00, 0x00, 0x00}},
 {KLV_KEY_STATIC_PRESSURE,"Static Pressure", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x01, 0x0F, 0x00, 0x00, 0x00}},
+{KLV_KEY_SENSOR_ELLIPSOID_HEIGHT,"Sensor Ellipsoid Height",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x01, 0x82, 0x47, 0x00, 0x00}},
+{KLV_KEY_FRAME_CENTER_HEIGHT_ABOVE_ELLIPSOID,"Frame Center Height Above Ellipsoid",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x48, 0x00, 0x00, 0x00}},
+// KLV_KEY_OPERATIONAL_MODE is LDS Key 77 from MISB STD 0601
+{KLV_KEY_OPERATIONAL_MODE,"Operational Mode",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x03, 0x21, 0x00, 0x00, 0x00}},
+// KLV_KEY_SENSOR_NORTH_VELOCITY is LDS Key 79 from MISB STD 0601
+{KLV_KEY_SENSOR_NORTH_VELOCITY,"Sensor North Velocity",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x02, 0x7e, 0x00, 0x00, 0x00}},
+// KLV_KEY_SENSOR_EAST_VELOCITY is LDS Key 80 from MISB STD 0601
+{KLV_KEY_SENSOR_EAST_VELOCITY,"Sensor East Velocity",{0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x02, 0x7f, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_LOCAL_DATA_SET, "VMTI Local Data Set",{0x06, 0x0E, 0x2B, 0x34, 0x02, 0x0B, 0x01, 0x01, 0x0E, 0x01, 0x03, 0x01, 0x02, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_PRECISION_TIME_STAMP, "VMTI Precision Timestamp", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x07, 0x02, 0x01, 0x01, 0x01, 0x05, 0x00, 0x00}},
+{KLV_KEY_VMTI_PRECISION_TIME_STAMP_RAW, "VMTI Precision Timestamp", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x03, 0x07, 0x02, 0x01, 0x01, 0x01, 0x05, 0x00, 0x00}},
+{KLV_KEY_VMTI_SYSTEM_NAME, "VMTI System Name/Description", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x02, 0x7C, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_LS_VERSION_NUMBER, "VMTI LS Version Number", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x05, 0x04, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_TOTAL_TARGETS_DETECTED, "VMTI Total Number of Targets Detected in the Frame", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x36, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_NUMBER_REPORTED_TARGETS, "VMTI Number of Reported Targets", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x37, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_MOTION_IMAGERY_FRAME_NUMBER, "Motion Imagery Frame Number", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x03, 0x1F, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_FRAME_WIDTH, "VMTI Frame Width", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x02, 0x07, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_FRAME_HEIGHT, "VMTI Frame Height", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x02, 0x08, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_SOURCE_SENSOR, "VMTI Source Sensor", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x04, 0x20, 0x01, 0x02, 0x01, 0x01, 0x00, 0x00}},
+{KLV_KEY_VMTI_SENSOR_HORIZONTAL_FOV, "VMTI Sensor Horizontal Field of View", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x02, 0x04, 0x20, 0x02, 0x01, 0x01, 0x08, 0x00, 0x00}},
+{KLV_KEY_VMTI_SENSOR_VERTICAL_FOV, "VMTI Sensor Vertical Field of View", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x07, 0x04, 0x20, 0x02, 0x01, 0x01, 0x0A, 0x01, 0x00}},
+{KLV_KEY_VMTI_MOTION_IMAGERY_ID, "VMTI Motion Imagery ID", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x04, 0x05, 0x03, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGETSERIES, "VMTI VTargetSeries", {0x06, 0x0E, 0x2B, 0x34, 0x02, 0x04, 0x01, 0x01, 0x0E, 0x01, 0x03, 0x03, 0x1B, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_NUMBER, "Target Centroid Pixel Number", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x38, 0x00, 0x00, 0x00}}, 
+{KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_PIXEL_NUMBER, "Bounding Box Top Left Pixel Number", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x39, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_PIXEL_NUMBER, "Bounding Box Bottom Right Pixel Number", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x3A, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_PRIORITY, "Target Priority", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x3B, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_CONFIDENCE_LEVEL, "Target Confidence Level", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x3C, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_NEW_DETECTION_FLAG_TARGET_HISTORY, "New Detection Flag/Target History", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x3D, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_PERCENTAGE_OF_TARGET_PIXELS, "Percentage of Target Pixels", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x3E, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_COLOR, "Target Color", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x3F, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_INTENSITY, "Target Intensity", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x40, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_LOCATION_LATITUDE_OFFSET, "Target Location Latitude Offset", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x41, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_LOCATION_LONGITUDE_OFFSET, "Target Location Longitude Offset", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x42, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_HEIGHT, "Target Height", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x43, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_LATITUDE_OFFSET, "Bounding Box Top Left Latitude Offset", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x44, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_LONGITUDE_OFFSET, "Bounding Box Top Left Longitude Offset", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x45, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_LATITUDE_OFFSET, "Bounding Box Bottom Right Latitude Offset", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x46, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_LONGITUDE_OFFSET, "Bounding Box Bottom Right Longitude Offset", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x47, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_LOCATION, "Target Location", {0x06, 0x0E, 0x2B, 0x34, 0x02, 0x05, 0x01, 0x01, 0x0E, 0x01, 0x03, 0x03, 0x14, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_BOUNDARY, "Target Boundary", {0x06, 0x0E, 0x2B, 0x34, 0x02, 0x04, 0x01, 0x01, 0x0E, 0x01, 0x03, 0x03, 0x17, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_ROW, "Target Centroid Pixel Row", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x58, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_COLUMN, "Target Centroid Pixel Column", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x02, 0x03, 0x59, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_FPA_INDEX, "FPA Index", {0x06, 0x0E, 0x2B, 0x34, 0x02, 0x05, 0x01, 0x01, 0x0E, 0x01, 0x03, 0x03, 0x59, 0x1D, 0x01, 0x00}},
+{KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_LATITUDE, "VMTI Boundary Location Latitude", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x03, 0x28, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_LONGITUDE, "VMTI Boundary Location Longitude", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x03, 0x29, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_HEIGHT, "VMTI Boundary Location Height", {0x06, 0x0E, 0x2B, 0x34, 0x01, 0x01, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x03, 0x2A, 0x00, 0x00, 0x00}},
+{KLV_KEY_VMTI_VTARGET_PACK_ID, "VMTI VTarget Pack ID", {0x06, 0x0E, 0x2B, 0x34, 0x02, 0x05, 0x01, 0x01, 0x0E, 0x01, 0x01, 0x03, 0x07, 0x00, 0x00, 0x00}},
 {KLV_KEY_INVALID,"Invalid Key",{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}
 };
 
@@ -394,6 +466,50 @@ ossim_int64 klv_decode_length(const ossim_uint8* buf, ossim_uint32& offset)
    return size;
 }
 
+ossim_uint64 decode_length(const ossim_uint8* buf, ossim_uint32& offset)
+{
+   ossim_uint64 size = buf[offset];
+   ossim_uint8 longTest = buf[offset];
+   ++offset;
+   if (longTest & 0x80)
+   { /* long form */
+      int bytes_num = longTest & 0x7f;
+      /* SMPTE 379M 5.3.4 guarantee that bytes_num must not exceed 8 bytes */
+      if (bytes_num > 8)
+      {
+         return -1;
+      }
+      size = 0;
+
+      while (bytes_num--)
+      {
+         size = size << 8 | buf[offset];
+         ++offset;
+      }
+   }
+  
+   return size;
+}
+
+
+ossim_uint32 lds_decode_key(const ossim_uint8* buf, ossim_uint32& offset)
+{
+   ossim_uint32 key = buf[offset++];
+   //std::cout << "OLD KEY: " << ossimString::toString(key) << std::endl;
+   // Have more if highest bit set
+   if (key & 0x80)
+   { 
+      //std::cout << "TRIM KEY1: " << ossimString::toString(key ^ 0x80) << std::endl;
+      key = (key ^ 0x80) << 7;
+      //std::cout << "SHIFT KEY: " << ossimString::toString(key) << std::endl;
+      key = (buf[offset++] & 0x7f) | key;
+      //std::cout << "2nd byte " << ossimString::toString(buf[offset]) << std::endl;
+      //std::cout << "NEW KEY: " << ossimString::toString(key) << std::endl;
+   }
+  
+   return key;
+}
+
 ossimPredatorKlvTable::ossimPredatorKlvTable()
 {
    theNeedToSwapFlag = theEndian.getSystemEndianType()!=OSSIM_BIG_ENDIAN;
@@ -536,7 +652,7 @@ bool ossimPredatorKlvTable::addKeys(const ossim_uint8* buffer, ossim_uint32 leng
 
                  // now verify checksum
                  ossim_uint16 checksumCompare = compute16BitChecksum(checksumBuffer);
-                    
+
                  if(checksum == checksumCompare)
                  {
                     klvMapType::iterator iter = tempTable.begin();
@@ -548,7 +664,7 @@ bool ossimPredatorKlvTable::addKeys(const ossim_uint8* buffer, ossim_uint32 leng
                  }
                  else
                  {
-                //  std::cout << "WHAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+                  std::cout << "WHAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
                  }
  
                   //print(std::cout);
@@ -695,10 +811,25 @@ void ossimPredatorKlvTable::addAbsoluteKeyDefinitions(const std::vector<ossim_ui
 }
 
 bool ossimPredatorKlvTable::valueAsString(ossimString& result,
-                                          ossimPredatorKlvIndex id)const
+                                          ossimPredatorKlvIndex id, int set, int index)const
 {
    bool foundFlag = false;
-   klvMapType::const_iterator i = theKlvParameters.find(id);
+   
+   klvMapType::const_iterator i; //= theKlvParameters.find(id);
+   
+   // Need to support printing duplicate values for the same key
+   if (set > 0 || index > 0) 
+   {
+     for (klvMapType::const_iterator range=theKlvParameters.equal_range(id).first; range!=theKlvParameters.equal_range(id).second; ++range)
+     {
+        if (range->second.theIndex == index && range->second.theSet == set) i = range;
+     }
+   }
+   else
+   {
+     i = theKlvParameters.find(id);
+   }
+      
    if(i != theKlvParameters.end())
    {
       foundFlag = true;
@@ -707,6 +838,7 @@ bool ossimPredatorKlvTable::valueAsString(ossimString& result,
             // convert ossim_uint64 types
          case KLV_KEY_UNIX_TIMESTAMP:
          case KLV_KEY_USER_DEFINED_TIMESTAMP_MICROSECONDS_1970:
+	 case KLV_KEY_VMTI_PRECISION_TIME_STAMP:
          {
 //          std::cout << "ossimPredatorKlvTable::valueAsString: byte size ===== " <<i->second.theValue.size() << std::endl; 
             ossim_uint64 value = *reinterpret_cast<const ossim_uint64*>(&(i->second.theValue.front()));
@@ -714,22 +846,228 @@ bool ossimPredatorKlvTable::valueAsString(ossimString& result,
             {
                theEndian.swap(value);
             }
-            result = ossimString::toString(value);
+	    ossimDate klvdate;
+            if(getDate(klvdate, true))
+	    {
+ 	      std::ostringstream datestr;
+	      ossim_uint32 roundStart = klvdate.getFractionalSecond() * 1000;
+
+              datestr << std::setw(4) << std::setfill('0') << klvdate.getYear() << "-"
+   		<< std::setw(2) << std::setfill('0') << klvdate.getMonth() << "-"
+   		<< std::setw(2) << std::setfill('0') << klvdate.getDay() << " "
+   		<< std::setw(2) << std::setfill('0') << klvdate.getHour() << ":"
+   		<< std::setw(2) << std::setfill('0') << klvdate.getMin() << ":"
+   		<< std::setw(2) << std::setfill('0') << klvdate.getSec() << "."
+		<< std::setw(3) << std::setfill('0') << roundStart;
+  
+	      result = ossimString(datestr.str());
+	    }
             break;
          }
-         // convert uint8 values
-         case KLV_KEY_GENERIC_FLAG_DATA_01:
-         case KLV_KEY_INDICATED_AIR_SPEED:
-         case KLV_KEY_PLATFORM_GROUND_SPEED:
-         case KLV_KEY_UAS_LDS_VERSION_NUMBER:
+	 case KLV_KEY_UNIX_TIMESTAMP_RAW:
+	 case KLV_KEY_VMTI_PRECISION_TIME_STAMP_RAW:
+	 {
+            ossim_uint64 value = *reinterpret_cast<const ossim_uint64*>(&(i->second.theValue.front()));
+            if(theNeedToSwapFlag)
+            {
+               theEndian.swap(value);
+            }
+	    result = ossimString::toString(value);
+
+            break;
+	 }
+         // convert uint64 values
+         case KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_NUMBER:
+         case KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_PIXEL_NUMBER:
+         case KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_PIXEL_NUMBER:
+	 //case KLV_KEY_VMTI_PRECISION_TIME_STAMP_RAW:
          {
-            ossim_uint16 value = *reinterpret_cast<const ossim_uint8*>(&(i->second.theValue.front()));
+            ossim_uint64 value = *reinterpret_cast<const ossim_uint64*>(&(i->second.theValue.front()));
+            result = ossimString::toString(value);
+
+            break;
+         }
+	 // convert uint32
+         case KLV_KEY_VMTI_TOTAL_TARGETS_DETECTED:
+	 case KLV_KEY_VMTI_NUMBER_REPORTED_TARGETS:
+	 case KLV_KEY_VMTI_MOTION_IMAGERY_FRAME_NUMBER:
+	 case KLV_KEY_VMTI_FRAME_WIDTH:
+	 case KLV_KEY_VMTI_FRAME_HEIGHT:
+         case KLV_KEY_VMTI_VTARGET_TARGET_COLOR:
+         case KLV_KEY_VMTI_VTARGET_TARGET_INTENSITY:
+	 case KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_ROW:
+         case KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_COLUMN:
+	 case KLV_KEY_VMTI_VTARGET_PACK_ID:
+         {
+            ossim_uint32 value = *reinterpret_cast<const ossim_uint32*>(&(i->second.theValue.front()));
+            result = ossimString::toString(value);
+
+            break;
+         }
+         case KLV_KEY_VMTI_VTARGET_NEW_DETECTION_FLAG_TARGET_HISTORY:
+         {
+            ossim_uint16 value = *reinterpret_cast<const ossim_uint16*>(&(i->second.theValue.front()));
+            if(theNeedToSwapFlag)
+            {
+               theEndian.swap(value);
+            }
             result = ossimString::toString(value);
 
             break;
          }
          // convert uint16 values
+         case KLV_KEY_GENERIC_FLAG_DATA_01:
+         case KLV_KEY_INDICATED_AIR_SPEED:
+         case KLV_KEY_PLATFORM_GROUND_SPEED:
+         case KLV_KEY_UAS_LDS_VERSION_NUMBER:
+	 case KLV_KEY_VMTI_LS_VERSION_NUMBER:
+         {
+            ossim_uint16 value = *reinterpret_cast<const ossim_uint16*>(&(i->second.theValue.front()));
+            result = ossimString::toString(value);
+
+            break;
+         }
+	 // uint8 values 
+         case KLV_KEY_STREAM_ID:
+         case KLV_KEY_VMTI_VTARGET_TARGET_PRIORITY:
+         case KLV_KEY_VMTI_VTARGET_TARGET_CONFIDENCE_LEVEL:
+	 case KLV_KEY_VMTI_VTARGET_PERCENTAGE_OF_TARGET_PIXELS:
+         {
+            ossim_uint8 value = *reinterpret_cast<const ossim_uint8*>(&(i->second.theValue.front()));
+            result = ossimString::toString(value);
+
+            break;
+	 }
+	 case KLV_KEY_OPERATIONAL_MODE:
+	 {
+	    ossim_uint8 value = *reinterpret_cast<const ossim_uint8*>(&(i->second.theValue.front()));
+	    switch (value)
+	    {
+	      case 0:
+	        result = "Other";
+		break;
+              case 1:
+                result = "Operational";
+                break;
+              case 2:
+                result = "Training";
+                break;
+              case 3:
+                result = "Exercise";
+                break;
+              case 4:
+                result = "Maintenance";
+                break;
+              case 5:
+                result = "Test";
+                break;
+	      default:
+		result = "Unknown";
+		break;
+	    }
+	    break;
+	 }
+	 case KLV_KEY_CLASSIFYING_COUNTRY_AND_RELEASE_INSTRUCTIONS_COUNTRY_CODING_METHOD:
+         {
+            ossim_uint8 value = *reinterpret_cast<const ossim_uint8*>(&(i->second.theValue.front()));
+            switch (value)
+            {
+              case 1:
+                result = "ISO-3166 Two Letter";
+                break;
+              case 2:
+                result = "ISO-3166 Three Letter";
+                break;
+              case 3:
+                result = "FIPS 10-4 Two Letter";
+                break;
+              case 4:
+                result = "FIPS 10-4 Four Letter";
+                break;
+              case 5:
+                result = "ISO-3166 Numeric";
+                break;
+              case 6:
+                result = "1059 Two Letter";
+                break;
+              case 7:
+                result = "1059 Three Letter";
+                break;
+	      case 10:
+		result = "FIPS 10-4 Mixed";
+		break;
+              case 11:
+                result = "ISO 3166 Mixed";
+                break;
+              case 12:
+                result = "STANAG 1059 Mixed";
+                break;
+              case 13:
+                result = "GENC Two Letter";
+                break;
+              case 14:
+                result = "GENC Three Letter";
+                break;
+              case 15:
+                result = "GENC Numeric";
+                break;
+              case 16:
+                result = "GENC Mixed";
+                break;
+              default:
+                result = "Omitted Value";
+                break;
+            }
+            break;
+         }
+         case KLV_KEY_OBJECT_COUNTRY_CODING_METHOD:
+         {
+            ossim_uint8 value = *reinterpret_cast<const ossim_uint8*>(&(i->second.theValue.front()));
+            switch (value)
+            {
+              case 1:
+                result = "ISO-3166 Two Letter";
+                break;
+              case 2:
+                result = "ISO-3166 Three Letter";
+                break;
+              case 3:
+                result = "ISO-3166 Numeric";
+                break;
+              case 4:
+                result = "FIPS 10-4 Two Letter";
+                break;
+              case 5:
+                result = "FIPS 10-4 Four Letter";
+                break;
+              case 6:
+                result = "1059 Two Letter";
+                break;
+              case 7:
+                result = "1059 Three Letter";
+                break;
+              case 13:
+                result = "GENC Two Letter";
+                break;
+              case 14:
+                result = "GENC Three Letter";
+                break;
+              case 15:
+                result = "GENC Numeric";
+                break;
+              case 64:
+                result = "GENC AdminSub";
+                break;
+              default:
+                result = "Omitted Value";
+                break;
+            }
+            break;
+         }
+         // convert uint16 values
          case KLV_KEY_STATIC_PRESSURE:
+	 case KLV_KEY_TRANSPORT_STREAM_ID:
+	 case KLV_KEY_SECURITY_VERSION:
          {
             ossim_uint16 value = *reinterpret_cast<const ossim_uint16*>(&(i->second.theValue.front()));
             if(theNeedToSwapFlag)
@@ -758,6 +1096,21 @@ bool ossimPredatorKlvTable::valueAsString(ossimString& result,
          case KLV_KEY_ABSOLUTE_EVENT_START_DATE:
          case KLV_KEY_VIDEO_START_DATE_TIME_UTC:
          case KLV_KEY_PLATFORM_TAIL_NUMBER:
+         case KLV_KEY_SECURITY_INFORMATION:
+         case KLV_KEY_CLASSIFIED_BY:
+         case KLV_KEY_DERIVED_FROM:
+         case KLV_KEY_CLASSIFICATION_REASON:
+         case KLV_KEY_DECLASSIFICATION_DATE:
+         case KLV_KEY_CLASSIFICATION_AND_MARKING_SYSTEM:
+	 case KLV_KEY_UMID1:
+         case KLV_KEY_UMID2:
+         case KLV_KEY_UMID3:
+         case KLV_KEY_UMID4:
+         case KLV_KEY_ITEM_DESIGNATOR_ID:
+         case KLV_KEY_CLASSIFYING_COUNTRY_AND_RELEASING_INSTRUCTIONS_COUNTRY_CODE_METHOD_VERSION_DATE:
+         case KLV_KEY_OBJECT_COUNTRY_CODING_METHOD_VERSION_DATE:
+	 case KLV_KEY_VMTI_SYSTEM_NAME:
+	 case KLV_KEY_VMTI_SOURCE_SENSOR:
          {
 				if(i->second.theValue.size()>0)
 				{
@@ -796,6 +1149,22 @@ bool ossimPredatorKlvTable::valueAsString(ossimString& result,
          case KLV_KEY_OFFSET_CORNER_LONGITUDE_POINT_3:
          case KLV_KEY_OFFSET_CORNER_LATITUDE_POINT_4:
          case KLV_KEY_OFFSET_CORNER_LONGITUDE_POINT_4:
+	 case KLV_KEY_SENSOR_ELLIPSOID_HEIGHT:
+	 case KLV_KEY_FRAME_CENTER_HEIGHT_ABOVE_ELLIPSOID:
+         case KLV_KEY_PLATFORM_PITCH_ANGLE_FULL:
+         case KLV_KEY_PLATFORM_ROLL_ANGLE_FULL:
+	 case KLV_KEY_SENSOR_NORTH_VELOCITY:
+	 case KLV_KEY_SENSOR_EAST_VELOCITY:
+	 case KLV_KEY_VMTI_VTARGET_TARGET_HEIGHT:
+	 case KLV_KEY_VMTI_VTARGET_TARGET_LOCATION_LATITUDE_OFFSET:
+	 case KLV_KEY_VMTI_VTARGET_TARGET_LOCATION_LONGITUDE_OFFSET:
+         case KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_LATITUDE_OFFSET:
+         case KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_LONGITUDE_OFFSET:
+         case KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_LATITUDE_OFFSET:
+         case KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_LONGITUDE_OFFSET:
+	 case KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_HEIGHT:
+         case KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_LATITUDE:
+         case KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_LONGITUDE:
          {
             ossim_float64 value = *reinterpret_cast<const ossim_float64*>(&(i->second.theValue.front()));
             if(theNeedToSwapFlag)
@@ -820,6 +1189,7 @@ bool ossimPredatorKlvTable::valueAsString(ossimString& result,
          case KLV_KEY_ANGLE_TO_NORTH:
          case KLV_KEY_DEVICE_ABSOLUTE_SPEED:
          case KLV_KEY_DEVICE_ABSOLUTE_HEADING:
+
          {
             ossim_float32 value = *reinterpret_cast<const ossim_float32*>(&(i->second.theValue.front()));
             
@@ -832,19 +1202,298 @@ bool ossimPredatorKlvTable::valueAsString(ossimString& result,
          }
       }
    }
+   result = result.trim();
    return foundFlag;
 }
 
-ossimString ossimPredatorKlvTable::valueAsString(ossimPredatorKlvIndex id)const
+ossimString ossimPredatorKlvTable::valueAsString(ossimPredatorKlvIndex id, int set, int index)const
 
 {
    ossimString result;
-   if(valueAsString(result, id))
+   if(valueAsString(result, id, set, index))
    {
       return result;
    }
    
    return ossimString("");
+}
+
+bool ossimPredatorKlvTable::getClassification(ossimString& classification)const
+{
+   bool result = false;
+   classification = valueAsString(KLV_KEY_SECURITY_CLASSIFICATION);
+   if (!classification.empty()) result = true;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getSecurityInformation(ossimString& si)const
+{
+   bool result = false;
+   si = valueAsString(KLV_KEY_SECURITY_INFORMATION);
+   if (!si.empty()) result = true;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getSensor(ossimString& sensor)const
+{
+   bool result = false;
+   sensor = valueAsString(KLV_KEY_MISSION_NUMBER);
+   if (!sensor.empty()) result = true;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getSensorFormat(ossimString& sensorFormat)const
+{
+   bool result = false;
+   sensorFormat = valueAsString(KLV_KEY_IMAGE_SOURCE_SENSOR);
+   if (!sensorFormat.empty()) result = true;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getCountryCode(ossimString& countryCode)const
+{
+   bool result = false;
+   countryCode = valueAsString(KLV_KEY_OBJECT_COUNTRY_CODES);
+   if (!countryCode.empty()) result = true;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getReleaseInstructions(ossimString& ri)const
+{
+   bool result = false;
+   ri = valueAsString(KLV_KEY_SECURITY_RELEASE_INSTRUCTIONS);
+   if (!ri.empty()) result = true;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getNumberOfReportedTargets(ossim_uint32& targets)const
+{
+   bool result = false;
+   ossimString targetsString = valueAsString(KLV_KEY_VMTI_NUMBER_REPORTED_TARGETS);
+   if (!targetsString.empty())
+   {
+     targets = targetsString.toUInt32();
+     result = true;
+   }
+   return result;
+}
+
+bool ossimPredatorKlvTable::getTargetID(ossim_uint32& targetid, ossim_uint32 index)const
+{
+   bool result = false;
+   ossimString targetIDString = valueAsString(KLV_KEY_VMTI_VTARGET_PACK_ID, index);
+   if (!targetIDString.empty())
+   {
+     targetid = targetIDString.toUInt32();
+     result = true;
+   }
+   return result;
+}
+
+bool ossimPredatorKlvTable::getVMTITargetIntensity(ossim_uint32& targetIntensity, ossim_uint32 index)const
+{
+   bool result = false;
+   ossimString targetIntensityString = valueAsString(KLV_KEY_VMTI_VTARGET_TARGET_INTENSITY);
+   if (!targetIntensityString.empty())
+   {
+     targetIntensity = targetIntensityString.toUInt32();
+     result = true;
+   }
+   return result;
+}
+
+bool ossimPredatorKlvTable::getVMTIFrameNumber(ossim_uint32& frameNumber)const
+{
+   bool result = false;
+   ossimString frameNumberString = valueAsString(KLV_KEY_VMTI_MOTION_IMAGERY_FRAME_NUMBER);
+   if (!frameNumberString.empty())
+   {
+     frameNumber = frameNumberString.toUInt32();
+     result = true;
+   }
+   else frameNumber = 0;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getVMTIFrameWidth(ossim_uint32& frameWidth)const
+{
+   bool result = false;
+   ossimString frameWidthString = valueAsString(KLV_KEY_VMTI_FRAME_WIDTH);
+   if (!frameWidthString.empty())
+   {
+     frameWidth = frameWidthString.toUInt32();
+     result = true;
+   }
+   else frameWidth = 0;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getVMTIFrameHeight(ossim_uint32& frameHeight)const
+{
+   bool result = false;
+   ossimString frameHeightString = valueAsString(KLV_KEY_VMTI_FRAME_HEIGHT);
+   if (!frameHeightString.empty())
+   {
+     frameHeight = frameHeightString.toUInt32();
+     result = true;
+   }
+   else frameHeight = 0;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getVMTITargetCentroidPixelNumber(ossim_uint32& targetCentroidPixel, ossim_uint32 index)const
+{
+   bool result = false;
+   ossimString targetCentroidPixelString = valueAsString(KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_NUMBER, index);
+   if (!targetCentroidPixelString.empty())
+   {
+     targetCentroidPixel = targetCentroidPixelString.toUInt32();
+     result = true;
+   }
+   else targetCentroidPixel = 0;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getVMTITopLeftPixelNumber(ossim_uint32& topLeftPixel, ossim_uint32 index)const
+{
+   bool result = false;
+   ossimString topLeftPixelString = valueAsString(KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_PIXEL_NUMBER, index);
+   if (!topLeftPixelString.empty())
+   {
+     topLeftPixel = topLeftPixelString.toUInt32();
+     result = true;
+   }
+   else topLeftPixel = 0;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getVMTIBottomRightPixelNumber(ossim_uint32& bottomRightPixel, ossim_uint32 index)const
+{
+   bool result = false;
+   ossimString bottomRightPixelString = valueAsString(KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_PIXEL_NUMBER, index);
+   if (!bottomRightPixelString.empty())
+   {
+     bottomRightPixel = bottomRightPixelString.toUInt32();
+     result = true;
+   }
+   else bottomRightPixel = 0;
+   return result;
+}
+
+bool ossimPredatorKlvTable::getVMTIPointFromPixel(ossimDpt& point, ossim_uint32 index, ossim_uint32 pointtype)const
+{
+   ossim_uint32 pixel;
+   ossim_uint32 frameWidth;
+   getVMTIFrameWidth(frameWidth);
+   switch (pointtype)
+   {
+     case 0:
+       getVMTITargetCentroidPixelNumber(pixel, index);
+       break;
+     case 1:
+       getVMTITopLeftPixelNumber(pixel, index);
+       break;
+     case 2:
+       getVMTIBottomRightPixelNumber(pixel, index);
+       break;
+   }
+   point.x = pixel % frameWidth;
+   point.y = pixel / frameWidth;
+}
+
+bool ossimPredatorKlvTable::getVMTIUnixMicroTime(ossim_uint64& time)const
+{
+   bool result = false;
+   ossimString unixMicroTimeString = valueAsString(KLV_KEY_UNIX_TIMESTAMP_RAW);  // Seems to be screwed up in VMTI, so using KLV frame time for now.  KLV_KEY_VMTI_PRECISION_TIME_STAMP_RAW);
+   if (!unixMicroTimeString.empty())
+   {
+     time = unixMicroTimeString.toUInt64();
+     result = true;
+   }
+   return result;
+}
+
+ossimString ossimPredatorKlvTable::getFootprintMetadata()
+{
+   ossimGpt ul, ur, ll, lr;
+   getCornerPoints(ul, ur, lr, ll);
+   ossimString polygon = "POLYGON((" 
+                       +ossimString::toString(ul.lond())+" "
+                       +ossimString::toString(ul.latd())+","
+                       +ossimString::toString(ur.lond())+" "
+                       +ossimString::toString(ur.latd())+","
+                       +ossimString::toString(lr.lond())+" "
+                       +ossimString::toString(lr.latd())+","
+                       +ossimString::toString(ll.lond())+" "
+                       +ossimString::toString(ll.latd())+","
+                       +ossimString::toString(ul.lond())+" "
+                       +ossimString::toString(ul.latd())+" "
+                       +"))";
+
+   ossimString result = "{";
+   result+= "\"TIME\": \"" + valueAsString(KLV_KEY_UNIX_TIMESTAMP) + "\", "; 
+   result+= "\"FOOTPRINT\": \"" + polygon + "\"}"; 
+   return result;
+}
+
+ossimString ossimPredatorKlvTable::getSensorMetadata()
+{
+   ossim_float64 lat, lon, altitude;
+   ossim_float32 heading, pitch, roll;
+   getSensorPosition(lat, lon, altitude);
+   getPlatformOrientation(heading, pitch, roll);
+   ossimString point = "POINT("  
+                       +ossimString::toString(lon)+" "
+                       +ossimString::toString(lat)+","
+                       +ossimString::toString(altitude)
+                       +")";
+
+   ossimString result = "{";
+   result+= "\"TIME\": \"" + valueAsString(KLV_KEY_UNIX_TIMESTAMP) + "\", ";
+   result+= "\"SENSOR_POSITION\": \"" + point + "\", "; 
+   result+= "\"HEADING\": \"" + ossimString::toString(heading) + "\", ";
+   result+= "\"PITCH\": \"" + ossimString::toString(pitch) + "\", ";
+   result+= "\"ROLL\": \"" + ossimString::toString(roll) + "\"}";
+   return result;
+}
+
+ossimString ossimPredatorKlvTable::getMetadata(ossim_int64 initialepoc)
+{
+   ossimGpt ul, ur, ll, lr;
+   getCornerPoints(ul, ur, lr, ll);
+   ossimString polygon = "POLYGON(("
+                       +ossimString::toString(ul.lond())+" "
+                       +ossimString::toString(ul.latd())+","
+                       +ossimString::toString(ur.lond())+" "
+                       +ossimString::toString(ur.latd())+","
+                       +ossimString::toString(lr.lond())+" "
+                       +ossimString::toString(lr.latd())+","
+                       +ossimString::toString(ll.lond())+" "
+                       +ossimString::toString(ll.latd())+","
+                       +ossimString::toString(ul.lond())+" "
+                       +ossimString::toString(ul.latd())+" "
+                       +"))";
+   ossim_float64 lat, lon, altitude;
+   ossim_float32 heading, pitch, roll;
+   getSensorPosition(lat, lon, altitude);
+   getPlatformOrientation(heading, pitch, roll);
+   ossimString point = "POINT("
+                       +ossimString::toString(lon)+" "
+                       +ossimString::toString(lat)+","
+                       +ossimString::toString(altitude)
+                       +")";
+   ossim_int64 epoc;
+   getUnixEpocTimestamp(epoc);
+   ossim_float64 timeoffset = ( epoc - initialepoc) / 1000000.0;
+   ossimString result = "{";
+   result+= "\"TIMEOFFSET\": \"" + ossimString::toString(timeoffset) + "\", ";
+   result+= "\"TIME\": \"" + valueAsString(KLV_KEY_UNIX_TIMESTAMP) + "\", ";
+   result+= "\"FOOTPRINT\": \"" + polygon + "\", ";
+   result+= "\"SENSOR_POSITION\": \"" + point + "\", ";
+   result+= "\"HEADING\": \"" + ossimString::toString(heading) + "\", ";
+   result+= "\"PITCH\": \"" + ossimString::toString(pitch) + "\", ";
+   result+= "\"ROLL\": \"" + ossimString::toString(roll) + "\"}";
+   return result;
 }
 
 bool ossimPredatorKlvTable::getCornerPoints(ossimGpt& pt1,
@@ -1052,8 +1701,13 @@ bool ossimPredatorKlvTable::getPlatformOrientation(ossim_float32& heading,
                                                    ossim_float32& roll)const
 {
    heading = valueAsString(KLV_KEY_PLATFORM_HEADING_ANGLE).toFloat32();
-   pitch = valueAsString(KLV_KEY_PLATFORM_PITCH_ANGLE).toFloat32();
-   roll = valueAsString(KLV_KEY_PLATFORM_ROLL_ANGLE).toFloat32();
+   ossimString pitchString = valueAsString(KLV_KEY_PLATFORM_PITCH_ANGLE);
+   ossimString rollString = valueAsString(KLV_KEY_PLATFORM_ROLL_ANGLE);
+   if (pitchString.empty()) pitchString = valueAsString(KLV_KEY_PLATFORM_PITCH_ANGLE_FULL);
+   if (rollString.empty()) rollString = valueAsString(KLV_KEY_PLATFORM_ROLL_ANGLE_FULL);
+   pitch = pitchString.toFloat32();
+   roll = rollString.toFloat32();
+   
    
    return true;
 }
@@ -1318,41 +1972,13 @@ void ossimPredatorKlvTable::addSecurityMetadataLocalSetElements(const std::vecto
       {
         switch(key)
         {
-           case 1://Security Classification
+           case 1:
            {
-              ossim_uint16 classification = (ossim_uint16)(*(buffer.begin()+idx));
+              ossim_uint8 classification = (ossim_uint8)(*(buffer.begin()+idx));
               ossimString value;
               switch(classification)
               {
-                 case 0x01:
-                 {
-                    value = "UNCLASSIFIED";
-                    break;
-                 }
-                 case 0x02:
-                 {
-                    value = "RESTRICTED";
-                    break;
-                 }
-                 case 0x03:
-                 {
-                    value = "CONFIDENTIAL";
-                    break;
-                 }
-                 case 0x04:
-                 {
-                    value = "SECRET";
-                    break;
-                 }
-                 case 0x05:
-                 {
-                    value = "TOP SECRET";
-                    break;
-                 }
-                 
               }
-              //UNCLASSIFIED (0x01) RESTRICTED (0x02) CONFIDENTIAL (0x03) SECRET (0x04) TOPSECRET(0x05)
-              //std::cout << "SECURITY CLASS: " << value << std::endl;
 
               Node n(KLV_KEY_SECURITY_CLASSIFICATION,
                      std::vector<ossim_uint8>(value.begin(), value.end()));
@@ -1362,10 +1988,10 @@ void ossimPredatorKlvTable::addSecurityMetadataLocalSetElements(const std::vecto
            }
            case 2://Classifying Country and Releasing Instructions Country Coding Method
            {
-              ossim_uint16 classifyingCountry = (*(buffer.begin()+idx));
-              // ISO-3166 Two Letter (0x01) ISO-3166 Three Letter (0x02) FIPS 10-4 Two Letter (0x03) FIPS 10-4 Four Letter (0x04)
-              if(traceDebug())  std::cout << "Classifying Country and Releasing Instructions Country Coding Method Not Handled: " << std::endl;
-              //ossim_uint8 value = (*(buffer.begin()+idx));
+              Node n(KLV_KEY_CLASSIFYING_COUNTRY_AND_RELEASE_INSTRUCTIONS_COUNTRY_CODING_METHOD,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
 
               break;
            }
@@ -1374,10 +2000,79 @@ void ossimPredatorKlvTable::addSecurityMetadataLocalSetElements(const std::vecto
               if(traceDebug())  std::cout << "Classifying Country Not Handled: " << std::endl;
               break;
            }
+           case 4://Security information
+	   {
+              Node n(KLV_KEY_SECURITY_INFORMATION,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+ 	   }
+           case 5://Caveats
+	   {
+              Node n(KLV_KEY_SECURITY_CAVEATS,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 6://Releasing Instructions
+           {
+              Node n(KLV_KEY_SECURITY_RELEASE_INSTRUCTIONS,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 7://Classified By
+           {
+              Node n(KLV_KEY_CLASSIFIED_BY,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 8://Derived From
+           {
+              Node n(KLV_KEY_DERIVED_FROM,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 9://Classification Reason
+           {
+              Node n(KLV_KEY_CLASSIFICATION_REASON,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 10://Declassification Date
+           {
+              Node n(KLV_KEY_DECLASSIFICATION_DATE,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 11://Classification and Marking System
+           {
+              Node n(KLV_KEY_CLASSIFICATION_AND_MARKING_SYSTEM,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
            case 12://Object Country Coding Method
            {
-               //std::cout << "Object Country Coding Method: " << (int)(*(buffer.begin()+idx)) << std::endl;
-              //ossim_uint8 value = (*(buffer.begin()+idx));
+              Node n(KLV_KEY_OBJECT_COUNTRY_CODING_METHOD,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+
+
              break;
            }
            case 13://Object Country Codes
@@ -1386,33 +2081,730 @@ void ossimPredatorKlvTable::addSecurityMetadataLocalSetElements(const std::vecto
                      std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
               tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
                                                      n));
-              //std::cout << "Object Country Codes: " << ossimString(buffer.begin() +idx, buffer.begin()+(idx+length)) << std::endl;
               break;
            }
-           case 4://Security-SCI information
-           case 5://Caveats
-           case 6://Releasing Instructions
-           case 7://Classified By
-           case 8://Derived From
-           case 9://Classification Reason
-           case 10://Declassification Date
-           case 11://Classification and Marking System
            case 14://Classification Comments
-           case 15://UMID Video
-           case 16://UMID Audio
-           case 17://UMID Data
-           case 18://UMID System
+           {
+              Node n(KLV_KEY_CLASSIFICATION_COMMENT,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 15://UMID1 Video
+           {
+              Node n(KLV_KEY_UMID1,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 16://UMID2 Audio
+           {
+              Node n(KLV_KEY_UMID2,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 17://UMID3 Data
+           {
+              Node n(KLV_KEY_UMID3,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 18://UMID4 System
+           {
+              Node n(KLV_KEY_UMID4,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
            case 19://Stream ID
+           {
+              Node n(KLV_KEY_STREAM_ID,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
            case 20://Transport Stream ID
+           {
+              Node n(KLV_KEY_TRANSPORT_STREAM_ID,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
            case 21://Item Designator ID
+           {
+              Node n(KLV_KEY_ITEM_DESIGNATOR_ID,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 22://
+           {
+              Node n(KLV_KEY_SECURITY_VERSION,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 23://
+           {
+              Node n(KLV_KEY_CLASSIFYING_COUNTRY_AND_RELEASING_INSTRUCTIONS_COUNTRY_CODE_METHOD_VERSION_DATE,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 24://
+           {
+              Node n(KLV_KEY_OBJECT_COUNTRY_CODING_METHOD_VERSION_DATE,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
            default:
            {
               if(traceDebug()) std::cout << "SECURITY KEY " << key << " Not handled\n";
+	      std::cout << "SECURITY KEY " << key << " Not handled\n";
               break;
            }
         }
       }
       idx +=length;
+   }
+}
+
+void ossimPredatorKlvTable::addVMTILocalDataSetElements(const std::vector<ossim_uint8>& buffer, klvMapType& tempTable)
+{
+   if(buffer.size() == 0) return;
+   //printHex(buffer);
+   ossim_uint32 idx = 0;
+   bool done = false;
+   while(!done&&((idx+2) < buffer.size()))
+   {
+      ossim_uint32 key = lds_decode_key(&buffer[0], idx);
+      ossim_uint32 length= klv_decode_length(&buffer[0], idx);
+      //ossim_uint32 key    = buffer[idx++];
+      //ossim_uint32 length = buffer[idx++];
+      if(length > 0)
+      {
+        switch(key)
+        {
+           case 2: // unix timestamp
+           {
+              ossim_uint64 value = *reinterpret_cast<const ossim_uint64*>(&buffer.front()+idx);
+              //valueToString already swaps this, so it was getting swapped twice
+              //if(theNeedToSwapFlag)
+              //{
+              //  theEndian.swap(value);
+              //}
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+	      ossim_uint8* tempBuf2 = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_VMTI_PRECISION_TIME_STAMP,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              Node n2(KLV_KEY_VMTI_PRECISION_TIME_STAMP_RAW,
+                     std::vector<ossim_uint8>(tempBuf2,
+                                              tempBuf2+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n2.theId),
+                                                     n2));
+              break;
+           }
+	   case 3://System Name/Description (string)
+           {
+              Node n(KLV_KEY_VMTI_SYSTEM_NAME,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 4://LS Version Number (uint16)
+           {
+              ossim_uint16 value = 0;
+              ossim_uint32 idx2 = 0;
+              while (idx2 < length)
+              {
+                value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                ++idx2;
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_VMTI_LS_VERSION_NUMBER,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+2));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 5://Total Number of Targets Detected in the frame 
+           {
+	      ossim_uint32 value = 0;
+	      ossim_uint32 idx2 = 0;
+	      while (idx2 < length)
+	      {
+		value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+		++idx2;
+	      }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_VMTI_TOTAL_TARGETS_DETECTED,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+4));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 6://Number of Reported Targets 
+           {
+              ossim_uint32 value = 0;
+              ossim_uint32 idx2 = 0;
+              while (idx2 < length)
+              {
+                value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                ++idx2;
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_VMTI_NUMBER_REPORTED_TARGETS,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+4));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+
+              break;
+           }
+           case 7://Motion Imagery Frame Number 
+           {
+              ossim_uint32 value = 0;
+              ossim_uint32 idx2 = 0;
+              while (idx2 < length)
+              {
+                value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                ++idx2;
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_VMTI_MOTION_IMAGERY_FRAME_NUMBER,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+4));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+
+              break;
+           }
+           case 8://Frame Width
+           {
+              ossim_uint32 value = 0;
+              ossim_uint32 idx2 = 0;
+              while (idx2 < length)
+              {
+                value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                ++idx2;
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_VMTI_FRAME_WIDTH,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+4));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+
+              break;
+           }
+           case 9://Frame Height
+           {
+              ossim_uint32 value = 0;
+              ossim_uint32 idx2 = 0;
+              while (idx2 < length)
+              {
+                value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                ++idx2;
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_VMTI_FRAME_HEIGHT,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+4));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+
+              break;
+           }
+           case 10:
+           {
+              Node n(KLV_KEY_VMTI_SOURCE_SENSOR,
+                     std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+	   case 101:
+	   {
+              std::vector<ossim_uint8> tempBuf(buffer.begin()+idx, buffer.begin()+idx+length);
+		//printHex(tempBuf);
+              addVTargetSeries(tempBuf, tempTable);
+              break;
+           }
+           default:
+           {
+              //if(traceDebug()) 
+              std::cout << "VMTI LOCAL DATA SET KEY " << key << " Not handled\n";
+              break;
+           }
+        }
+      }
+      idx +=length;
+   }
+}
+
+void ossimPredatorKlvTable::addVTargetSeries(const std::vector<ossim_uint8>& buffer, klvMapType& tempTable)
+{
+   if(buffer.size() == 0) return;
+   ossim_uint32 idx = 0;
+   ossim_uint32 packnum = 0;
+   while((idx+2) < buffer.size())
+   {
+      //ossim_uint32 key = lds_decode_key(&buffer[0], idx);
+      // NO KEY HERE - k-lvlvlvlv just a bunch of lengths and values for the target packs
+      ossim_uint32 length2= klv_decode_length(&buffer[0], idx);
+      //std::cout << "VTARGET PACK LENGTH: " << ossimString::toString(length2) << std::endl;
+      if(length2 > 0)
+      {
+	ossim_uint32 offset = idx;
+	// Decode the Target Pack
+	ossim_uint32 targetid = lds_decode_key(&buffer[0], idx);
+        ossim_uint8* targetBuf = reinterpret_cast<ossim_uint8*>(&targetid);
+        Node n(KLV_KEY_VMTI_VTARGET_PACK_ID,
+                       std::vector<ossim_uint8>(targetBuf,
+                                                targetBuf+4), packnum);
+        tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+
+	while(((idx-offset)+2) < length2)
+	{
+	  ossim_uint32 key = lds_decode_key(&buffer[0], idx);
+	  ossim_uint32 length= klv_decode_length(&buffer[0], idx);
+
+	  if (length > 0)
+	  {
+	    switch(key)
+            {
+              case 1:
+              {
+                ossim_uint64 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+                Node n(KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_NUMBER,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+8), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 2:
+              {
+                ossim_uint64 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+                Node n(KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_PIXEL_NUMBER,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+8), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 3:
+              {
+                ossim_uint64 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+                Node n(KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_PIXEL_NUMBER,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+8), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 4:
+              {
+                Node n(KLV_KEY_VMTI_VTARGET_TARGET_PRIORITY,
+                   std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+                break;
+              }
+              case 5:
+              {
+                Node n(KLV_KEY_VMTI_VTARGET_TARGET_CONFIDENCE_LEVEL,
+                   std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+                break;
+              }
+              case 6:
+              {
+                ossim_uint16 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+                Node n(KLV_KEY_VMTI_VTARGET_NEW_DETECTION_FLAG_TARGET_HISTORY,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+2), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 7:
+              {
+                Node n(KLV_KEY_VMTI_VTARGET_PERCENTAGE_OF_TARGET_PIXELS,
+                   std::vector<ossim_uint8>(buffer.begin()+idx, buffer.begin()+(idx+length)), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+                break;
+              }
+              case 8:
+              {
+                ossim_uint32 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+                Node n(KLV_KEY_VMTI_VTARGET_TARGET_COLOR,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+4), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 9:
+              {
+                ossim_uint32 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+                Node n(KLV_KEY_VMTI_VTARGET_TARGET_INTENSITY,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+4), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 10:
+              {
+                ossim_uint32 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+
+                ossim_float64 newvalue  = mapValue(value, 0, 16777215, -19.2, 19.2);
+                if(theNeedToSwapFlag)
+                {
+                  theEndian.swap(newvalue);
+                }
+
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&newvalue);
+                Node n(KLV_KEY_VMTI_VTARGET_TARGET_LOCATION_LATITUDE_OFFSET,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+8), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 11:
+              {
+                ossim_uint32 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_float64 newvalue  = mapValue(value, 0, 16777215, -19.2, 19.2);
+                if(theNeedToSwapFlag)
+                {
+                  theEndian.swap(newvalue);
+                }
+
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&newvalue);
+                Node n(KLV_KEY_VMTI_VTARGET_TARGET_LOCATION_LONGITUDE_OFFSET,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+8), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 12:
+              {
+                ossim_uint16 buf = *reinterpret_cast<const ossim_uint16*>(&buffer.front()+idx);
+                if(theNeedToSwapFlag)
+                {
+                  theEndian.swap(buf);
+                }
+                ossim_float64 value  = mapValue(buf, 0, 65535, -900, 19000);
+                if(theNeedToSwapFlag)
+                {
+                  theEndian.swap(value);
+                }
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+                Node n(KLV_KEY_VMTI_VTARGET_TARGET_HEIGHT,//KLV_KEY_SENSOR_TRUE_ALTITUDE,
+                       std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+             }
+              case 13:
+              {
+                ossim_uint32 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_float64 newvalue  = mapValue(value, 0, 16777215, -19.2, 19.2);
+                if(theNeedToSwapFlag)
+                {
+                  theEndian.swap(newvalue);
+                }
+
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&newvalue);
+                Node n(KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_LATITUDE_OFFSET,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+8), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 14:
+              {
+                ossim_uint32 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_float64 newvalue  = mapValue(value, 0, 16777215, -19.2, 19.2);
+                if(theNeedToSwapFlag)
+                {
+                  theEndian.swap(newvalue);
+                }
+
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&newvalue);
+                Node n(KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_LONGITUDE_OFFSET,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+8), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 15:
+              {
+                ossim_uint32 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_float64 newvalue  = mapValue(value, 0, 16777215, -19.2, 19.2);
+                if(theNeedToSwapFlag)
+                {
+                  theEndian.swap(newvalue);
+                }
+
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&newvalue);
+                Node n(KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_LATITUDE_OFFSET,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+8), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 16:
+              {
+                ossim_uint32 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_float64 newvalue  = mapValue(value, 0, 16777215, -19.2, 19.2);
+                if(theNeedToSwapFlag)
+                {
+                  theEndian.swap(newvalue);
+                }
+
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&newvalue);
+
+                Node n(KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_LONGITUDE_OFFSET,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+8), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 18:
+              {
+                std::vector<ossim_uint8> tempBuf(buffer.begin()+idx, buffer.begin()+idx+length);
+                //printHex(tempBuf);
+                addBoundarySeries(tempBuf, tempTable, packnum);
+                break;
+              }
+              case 19:
+              {
+                ossim_uint32 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+                Node n(KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_ROW,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+4), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+              case 20:
+              {
+                ossim_uint32 value = 0;
+                ossim_uint32 idx2 = 0;
+                while (idx2 < length)
+                {
+                  value = (value << 8) | *reinterpret_cast<const ossim_uint8*>(&buffer.front()+idx+idx2);
+                  ++idx2;
+                }
+                ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+                Node n(KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_COLUMN,
+                       std::vector<ossim_uint8>(tempBuf,
+                                                tempBuf+4), packnum);
+                tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                       n));
+                break;
+              }
+	      default:
+	        std::cout << "VTARGET PACK NUMBER: " << ossimString::toString(packnum) << " ID: " << ossimString::toString(targetid) << " KEY: " << ossimString::toString(key) << " WITH LENGTH " << ossimString::toString(length) << " NOT HANDLED" << std::endl;
+	        break;
+            }
+	    idx +=length;
+	  }
+	}
+      }
+      ++packnum;
+   }
+}
+
+void ossimPredatorKlvTable::addBoundarySeries(const std::vector<ossim_uint8>& buffer, klvMapType& tempTable, int packnum)
+{
+   if(buffer.size() == 0) return;
+   //printHex(buffer);
+   ossim_uint32 idx = 0;
+   ossim_uint32 locationnum = 0;
+   while((idx+2) < buffer.size())
+   {
+      ossim_uint32 length= klv_decode_length(&buffer[0], idx);
+
+      if (length > 10) // current test data only has lat/lon/height 
+      { 
+	      // LATITUDE
+              // Map -(2^31-1)..(2^31-1) to +/-90
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -90.0, 90.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n1(KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_LATITUDE,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8), packnum, locationnum);
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n1.theId),
+                                                     n1));
+	      idx+=4;
+
+              // LONGITUDE
+              // Map -(2^31-1)..(2^31-1) to +/-90
+              buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              value  = mapValue(buf, -2147483647, 2147483647, -90.0, 90.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n2(KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_LONGITUDE,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8), packnum, locationnum);
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n2.theId),
+                                                     n2));
+	      idx+=4;
+
+              // HEIGHT
+              ossim_uint16 buf2 = *reinterpret_cast<const ossim_uint16*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf2);
+              }
+              value  = mapValue(buf2, 0, 65535, -900, 19000);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n3(KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_HEIGHT,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8), packnum, locationnum);
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n3.theId),
+                                                     n3));
+	      idx+=2;
+	      ++locationnum;
+      } 
    }
 }
 
@@ -1428,8 +2820,10 @@ void ossimPredatorKlvTable::addUasDatalinkLocalDataSet(const std::vector<ossim_u
    bool done = false;
    while(!done&&((idx+2) < buffer.size()))
    {
-      ossim_uint32 key= buffer[idx++];
-      ossim_uint32 length= buffer[idx++];
+      ossim_uint32 key = lds_decode_key(&buffer[0], idx);
+      //ossim_uint32 key= buffer[idx++];
+      //ossim_uint32 length= buffer[idx++];
+      ossim_uint32 length= klv_decode_length(&buffer[0], idx);
       //std::cout << "KEY ====================== " << key << std::endl;
       //std::cout << "LENGTH ====================== " << length << std::endl;
       if(length > 0)
@@ -1450,16 +2844,22 @@ void ossimPredatorKlvTable::addUasDatalinkLocalDataSet(const std::vector<ossim_u
            case 2: // unix timestamp
            {
               ossim_uint64 value = *reinterpret_cast<const ossim_uint64*>(&buffer.front()+idx);
-              if(theNeedToSwapFlag)
-              {
-                theEndian.swap(value);
-              }
+	      //valueToString already swaps this, so it was getting swapped twice
+              //if(theNeedToSwapFlag)
+              //{
+              //  theEndian.swap(value);
+              //}
               ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
               Node n(KLV_KEY_UNIX_TIMESTAMP,
                      std::vector<ossim_uint8>(tempBuf,
                                               tempBuf+8));
               tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
                                                      n));
+              Node n2(KLV_KEY_UNIX_TIMESTAMP_RAW,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n2.theId),
+                                                     n2));
               
               break;
            }
@@ -1907,8 +3307,6 @@ void ossimPredatorKlvTable::addUasDatalinkLocalDataSet(const std::vector<ossim_u
                  theEndian.swap(buf);
               }
               ossim_float64 value  = mapValue(buf, -32767, 32767, -0.075, 0.075); 
-              //std::cout << "offset corner lat 1 == " << value << std::endl;
-              //            std::cout << "SENSOR SLANT ANGLE!!" << std::endl;
               if(theNeedToSwapFlag)
               {
                  theEndian.swap(value);
@@ -2182,13 +3580,8 @@ void ossimPredatorKlvTable::addUasDatalinkLocalDataSet(const std::vector<ossim_u
            }
            case 48:
            {
-
-              //if(traceDebug())
-              //{
-                 std::vector<ossim_uint8> tempBuf(buffer.begin()+idx, buffer.begin()+idx+length);
-                 addSecurityMetadataLocalSetElements(tempBuf, tempTable);
-               //  std::cout << "Security Local Dataset Not Handled!! ADDED KEYS?: "  << std::endl;
-              //}
+              std::vector<ossim_uint8> tempBuf(buffer.begin()+idx, buffer.begin()+idx+length);
+              addSecurityMetadataLocalSetElements(tempBuf, tempTable);
               break;
            }
            case 49:
@@ -2399,8 +3792,321 @@ void ossimPredatorKlvTable::addUasDatalinkLocalDataSet(const std::vector<ossim_u
   //            std::cout << "EVENT START TIME!!" << std::endl;
               break;
            }
+	   case 74:
+	   {
+              std::vector<ossim_uint8> tempBuf(buffer.begin()+idx, buffer.begin()+idx+length);
+              addVMTILocalDataSetElements(tempBuf, tempTable);
+              break;
+	   }
+	   case 75:
+	   {
+              // Map 0..(2^16-1) to -900..19000.
+              ossim_uint16 buf = *reinterpret_cast<const ossim_uint16*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, 0, 65535, -900, 19000);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_SENSOR_ELLIPSOID_HEIGHT,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+	   }
+           case 77:
+           {
+              Node n(KLV_KEY_OPERATIONAL_MODE,
+                     std::vector<ossim_uint8>(buffer.begin()+idx,
+                                              buffer.begin()+idx+length));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              //std::cout << "KLV_KEY_UAS_LDS_VERSION_NUMBER: " << valueAsString(KLV_KEY_UAS_LDS_VERSION_NUMBER) <<std::endl;
+              // UAS LDS Version Number
+              break;
+	   }
+
+           case 78:
+           {
+              // Map 0..(2^16-1) to -900..19000.
+              ossim_uint16 buf = *reinterpret_cast<const ossim_uint16*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, 0, 65535, -900, 19000);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_FRAME_CENTER_HEIGHT_ABOVE_ELLIPSOID,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 79:
+           {
+              // Map -(2^15-1)..(2^15-1) to +/-327.
+              ossim_int16 buf = *reinterpret_cast<const ossim_int16*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -32767, 32767, -327, 327);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_SENSOR_NORTH_VELOCITY,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 80:
+           {
+              // Map -(2^15-1)..(2^15-1) to +/-327.
+              ossim_int16 buf = *reinterpret_cast<const ossim_int16*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -32767, 32767, -327, 327);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_SENSOR_EAST_VELOCITY,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+	   case 82:
+	   {
+              // Map -(2^31-1)..(2^31-1) to +/-90
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -90.0, 90.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_CORNER_LATITUDE_POINT_1,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+	   }
+	   case 83:
+	   {
+              // Map -(2^31-1)..(2^31-1) to +/-180
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -180.0, 180.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_CORNER_LONGITUDE_POINT_1,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+	   }
+           case 84:
+           {
+              // Map -(2^31-1)..(2^31-1) to +/-90
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -90.0, 90.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_CORNER_LATITUDE_POINT_2,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 85:
+           {
+              // Map -(2^31-1)..(2^31-1) to +/-180
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -180.0, 180.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_CORNER_LONGITUDE_POINT_2,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 86:
+           {
+              // Map -(2^31-1)..(2^31-1) to +/-90
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -90.0, 90.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_CORNER_LATITUDE_POINT_3,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 87:
+           {
+              // Map -(2^31-1)..(2^31-1) to +/-180
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -180.0, 180.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_CORNER_LONGITUDE_POINT_3,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 88:
+           {
+              // Map -(2^31-1)..(2^31-1) to +/-90
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -90.0, 90.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_CORNER_LATITUDE_POINT_4,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 89:
+           {
+              // Map -(2^31-1)..(2^31-1) to +/-180
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -180.0, 180.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_CORNER_LONGITUDE_POINT_4,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 90:
+           {
+              // Map -(2^31-1)..(2^31-1) to +/-90
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -90.0, 90.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_PLATFORM_PITCH_ANGLE_FULL,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
+           case 91:
+           {
+              // Map -(2^31-1)..(2^31-1) to +/-90
+              ossim_int32 buf = *reinterpret_cast<const ossim_int32*>(&buffer.front()+idx);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(buf);
+              }
+              ossim_float64 value  = mapValue(buf, -2147483647, 2147483647, -90.0, 90.0);
+              if(theNeedToSwapFlag)
+              {
+                 theEndian.swap(value);
+              }
+              ossim_uint8* tempBuf = reinterpret_cast<ossim_uint8*>(&value);
+              Node n(KLV_KEY_PLATFORM_ROLL_ANGLE_FULL,
+                     std::vector<ossim_uint8>(tempBuf,
+                                              tempBuf+8));
+              tempTable.insert(std::make_pair(static_cast<ossimPredatorKlvIndex>(n.theId),
+                                                     n));
+              break;
+           }
            default:
            {
+		std::cout << "KEY NOT HANDLED "  <<key  << std::endl;
               if(traceDebug() ) std::cout << "KEY NOT HANDLED "  <<key  << std::endl;  
               break;
            }
@@ -2503,23 +4209,18 @@ std::ostream& ossimPredatorKlvTable::print(std::ostream& out)const
   klvMapType::const_iterator iter = theKlvParameters.begin();
   while(iter!=theKlvParameters.end())
   {
+    //for (klvMapType::const_iterator iter=theKlvParameters.equal_range(id).first; iter!=theKlvParameters.equal_range(id).second; ++iter)
+    //{
     int idx = findPredatorKlvIndexByKey((*iter).second.theId);
     if(idx >= 0)
     {
-      out << (*iter).second.theId << "," << (*iter).first<< ", " << OSSIM_PREDATOR_UDS_TABLE[idx].theName << ": " << valueAsString((*iter).first) << "\n";
+        //out << (*iter).second.theId << "," << (*iter).first<< ", " << OSSIM_PREDATOR_UDS_TABLE[idx].theName << ": " << valueAsString((*iter).first) << "\n";
+      out << OSSIM_PREDATOR_UDS_TABLE[idx].theName <<  " " << ossimString::toString((*iter).second.theSet) << ":" << ossimString::toString((*iter).second.theIndex) << " " << valueAsString((*iter).first, (*iter).second.theSet, (*iter).second.theIndex) << "\n";
     }
     ++iter;
+    //}
   }
-
-  /*
-   klvMapType::const_iterator iter = theKlvParameters.begin();
-   while(iter!=theKlvParameters.end())
-   {
-      out << (*iter).second.theId << "," << (*iter).first<< ", " << OSSIM_PREDATOR_UDS_TABLE[(*iter).second.theId].theName << ": " << valueAsString((*iter).first) << "\n";
-      ++iter;
-   }
-   */
-   return out;
+  return out;
 }
 
 ossim_uint16 ossimPredatorKlvTable::compute16BitChecksum(const std::vector<ossim_uint8>& checksumBuffer)const

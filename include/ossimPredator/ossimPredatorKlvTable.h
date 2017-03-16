@@ -21,6 +21,7 @@ enum ossimPredatorKlvIndex
    KLV_KEY_STREAM_ID = 0,
    KLV_KEY_ORGANIZATIONAL_PROGRAM_NUMBER,
    KLV_KEY_UNIX_TIMESTAMP,
+   KLV_KEY_UNIX_TIMESTAMP_RAW,
    KLV_KEY_USER_DEFINED_UTC_TIMESTAMP,
    KLV_KEY_USER_DEFINED_TIMESTAMP_MICROSECONDS_1970,
    KLV_KEY_VIDEO_START_DATE_TIME_UTC, //Video time stamp
@@ -71,7 +72,6 @@ enum ossimPredatorKlvIndex
    KLV_KEY_OFFSET_CORNER_LONGITUDE_POINT_3,
    KLV_KEY_OFFSET_CORNER_LATITUDE_POINT_4,
    KLV_KEY_OFFSET_CORNER_LONGITUDE_POINT_4,
-
    KLV_KEY_CORNER_LATITUDE_POINT_1,
    KLV_KEY_CORNER_LONGITUDE_POINT_1,
    KLV_KEY_CORNER_LATITUDE_POINT_2,
@@ -88,7 +88,72 @@ enum ossimPredatorKlvIndex
    KLV_KEY_GENERIC_FLAG_DATA_01,
    KLV_KEY_UAS_LDS_VERSION_NUMBER,
    KLV_KEY_STATIC_PRESSURE,
+   KLV_KEY_SENSOR_ELLIPSOID_HEIGHT,
+   KLV_KEY_FRAME_CENTER_HEIGHT_ABOVE_ELLIPSOID,
+   KLV_KEY_OPERATIONAL_MODE,
+   KLV_KEY_SENSOR_NORTH_VELOCITY,
+   KLV_KEY_SENSOR_EAST_VELOCITY,
+   KLV_KEY_PLATFORM_PITCH_ANGLE_FULL,
+   KLV_KEY_PLATFORM_ROLL_ANGLE_FULL,
+   KLV_KEY_CLASSIFYING_COUNTRY_AND_RELEASE_INSTRUCTIONS_COUNTRY_CODING_METHOD,
+   KLV_KEY_CLASSIFYING_COUNTRY,
+   KLV_KEY_SECURITY_INFORMATION,
+   KLV_KEY_CLASSIFIED_BY,
+   KLV_KEY_DERIVED_FROM,
+   KLV_KEY_CLASSIFICATION_REASON,
+   KLV_KEY_DECLASSIFICATION_DATE,
+   KLV_KEY_CLASSIFICATION_AND_MARKING_SYSTEM,
+   KLV_KEY_UMID1,
+   KLV_KEY_UMID2,
+   KLV_KEY_UMID3,
+   KLV_KEY_UMID4,
    KLV_SECURITY_METADATA_UNIVERSAL_SET,
+   KLV_KEY_TRANSPORT_STREAM_ID,
+   KLV_KEY_ITEM_DESIGNATOR_ID,
+   KLV_KEY_SECURITY_VERSION,
+   KLV_KEY_CLASSIFYING_COUNTRY_AND_RELEASING_INSTRUCTIONS_COUNTRY_CODE_METHOD_VERSION_DATE,
+   KLV_KEY_OBJECT_COUNTRY_CODING_METHOD_VERSION_DATE,
+   KLV_KEY_OBJECT_COUNTRY_CODING_METHOD,
+   KLV_KEY_VMTI_LOCAL_DATA_SET,
+   KLV_KEY_VMTI_PRECISION_TIME_STAMP,
+   KLV_KEY_VMTI_PRECISION_TIME_STAMP_RAW,
+   KLV_KEY_VMTI_SYSTEM_NAME,
+   KLV_KEY_VMTI_LS_VERSION_NUMBER,
+   KLV_KEY_VMTI_TOTAL_TARGETS_DETECTED,
+   KLV_KEY_VMTI_NUMBER_REPORTED_TARGETS,
+   KLV_KEY_VMTI_MOTION_IMAGERY_FRAME_NUMBER,
+   KLV_KEY_VMTI_FRAME_WIDTH,
+   KLV_KEY_VMTI_FRAME_HEIGHT,
+   KLV_KEY_VMTI_SOURCE_SENSOR,
+   KLV_KEY_VMTI_SENSOR_HORIZONTAL_FOV,
+   KLV_KEY_VMTI_SENSOR_VERTICAL_FOV,
+   KLV_KEY_VMTI_MOTION_IMAGERY_ID,
+   KLV_KEY_VMTI_VTARGETSERIES,
+   KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_NUMBER,
+   KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_PIXEL_NUMBER,
+   KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_PIXEL_NUMBER,
+   KLV_KEY_VMTI_VTARGET_TARGET_PRIORITY,
+   KLV_KEY_VMTI_VTARGET_TARGET_CONFIDENCE_LEVEL,
+   KLV_KEY_VMTI_VTARGET_NEW_DETECTION_FLAG_TARGET_HISTORY,
+   KLV_KEY_VMTI_VTARGET_PERCENTAGE_OF_TARGET_PIXELS,
+   KLV_KEY_VMTI_VTARGET_TARGET_COLOR,
+   KLV_KEY_VMTI_VTARGET_TARGET_INTENSITY,
+   KLV_KEY_VMTI_VTARGET_TARGET_LOCATION_LATITUDE_OFFSET,
+   KLV_KEY_VMTI_VTARGET_TARGET_LOCATION_LONGITUDE_OFFSET,
+   KLV_KEY_VMTI_VTARGET_TARGET_HEIGHT,
+   KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_LATITUDE_OFFSET,
+   KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_TOP_LEFT_LONGITUDE_OFFSET,
+   KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_LATITUDE_OFFSET,
+   KLV_KEY_VMTI_VTARGET_BOUNDING_BOX_BOTTOM_RIGHT_LONGITUDE_OFFSET,
+   KLV_KEY_VMTI_VTARGET_TARGET_LOCATION,
+   KLV_KEY_VMTI_VTARGET_TARGET_BOUNDARY,
+   KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_ROW,
+   KLV_KEY_VMTI_VTARGET_TARGET_CENTROID_PIXEL_COLUMN,
+   KLV_KEY_VMTI_VTARGET_FPA_INDEX,
+   KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_LATITUDE,
+   KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_LONGITUDE,
+   KLV_KEY_VMTI_VTARGET_BOUNDARY_LOCATION_HEIGHT,
+   KLV_KEY_VMTI_VTARGET_PACK_ID,
    KLV_KEY_TOTAL
 };
 
@@ -107,17 +172,20 @@ public:
    struct Node
    {
       Node(int id=0, 
-           const std::vector<ossim_uint8>& value=std::vector<ossim_uint8>())
+           const std::vector<ossim_uint8>& value=std::vector<ossim_uint8>(), int set=0, int index=0)
       :theId(id),
-      theValue(value)
+      theValue(value),
+      theSet(set),
+      theIndex(index)
       {
          
       }
       int theId;
-      
       std::vector<ossim_uint8> theValue;
+      int theSet;
+      int theIndex;
    };
-   typedef std::map<ossimPredatorKlvIndex, ossimPredatorKlvTable::Node> klvMapType;
+   typedef std::multimap<ossimPredatorKlvIndex, ossimPredatorKlvTable::Node> klvMapType;
    ossimPredatorKlvTable();
    ossimPredatorKlvTable(const ossimPredatorKlvTable& src)
       :theNeedToParseBuffer(src.theNeedToParseBuffer),
@@ -134,8 +202,28 @@ public:
    void clear();
    //ossimString getValueAsString(ossimPredatorKlvIndex id)const;
    bool valueAsString(ossimString& result,
-                      ossimPredatorKlvIndex id)const;
-   ossimString valueAsString(ossimPredatorKlvIndex id)const;
+                      ossimPredatorKlvIndex id, int set=0, int index=0)const;
+   ossimString valueAsString(ossimPredatorKlvIndex id, int set=0, int index=0)const;
+   bool getSensor(ossimString& sensor)const;
+   bool getSensorFormat(ossimString& sensorFormat)const;
+   bool getCountryCode(ossimString& countryCode)const;
+   bool getClassification(ossimString& classification)const;
+   bool getSecurityInformation(ossimString& si)const;
+   bool getReleaseInstructions(ossimString& ri)const;
+   bool getNumberOfReportedTargets(ossim_uint32& targets)const;
+   bool getTargetID(ossim_uint32& targetid, ossim_uint32 index=0)const;
+   bool getVMTIFrameNumber(ossim_uint32& frameNumber)const;
+   bool getVMTIFrameWidth(ossim_uint32& frameWidth)const;
+   bool getVMTIFrameHeight(ossim_uint32& frameHeight)const;
+   bool getVMTITargetCentroidPixelNumber(ossim_uint32& targetCentroidPixel, ossim_uint32 index)const;
+   bool getVMTITopLeftPixelNumber(ossim_uint32& topLeftPixel, ossim_uint32 index)const;
+   bool getVMTIBottomRightPixelNumber(ossim_uint32& bottomRightPixel, ossim_uint32 index)const;
+   bool getVMTIPointFromPixel(ossimDpt& point, ossim_uint32 index, ossim_uint32 pointtype)const;
+   bool getVMTIUnixMicroTime(ossim_uint64& time)const;
+   bool getVMTITargetIntensity(ossim_uint32& targetIntensity, ossim_uint32 index)const;
+   ossimString getFootprintMetadata();
+   ossimString getSensorMetadata();
+   ossimString getMetadata(ossim_int64 initialepoc=0);
    
    bool getCornerPoints(ossimGpt& pt1,
                         ossimGpt& pt2,
@@ -195,6 +283,9 @@ protected:
   void addAbsoluteKeyDefinitions(const std::vector<ossim_uint8>& buffer, bool& needMore);
 
   void addSecurityMetadataLocalSetElements(const std::vector<ossim_uint8>& buffer, klvMapType& tempTable);
+  void addVMTILocalDataSetElements(const std::vector<ossim_uint8>& buffer, klvMapType& tempTable);
+  void addVTargetSeries(const std::vector<ossim_uint8>& buffer, klvMapType& tempTable);
+  void addBoundarySeries(const std::vector<ossim_uint8>& buffer, klvMapType& tempTable, int packnum=0);
   void addUasDatalinkLocalDataSet(const std::vector<ossim_uint8>& buffer, klvMapType& tempTable, ossim_uint16& checksum);
   void loadVariableDataNullTerminated(std::vector<ossim_uint8>& result, 
                                        const std::vector<ossim_uint8>& buf, 
