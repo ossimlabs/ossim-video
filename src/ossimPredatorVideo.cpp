@@ -360,6 +360,47 @@ ossimRefPtr<ossimPredatorVideo::KlvInfo> ossimPredatorVideo::nextKlv()
    return 0;
 }
 
+void ossimPredatorVideo::countFrames(ossim_uint32& frames, ossim_uint32& klvs)
+{
+   AVPacket        packet;
+   if(isOpen())
+   {
+     adjustSeek();
+     while(av_read_frame(theFormatCtx, &packet)>=0)
+     {
+       if(packet.stream_index == theKlvStreamIndex) ++klvs;
+       if(packet.stream_index == theVideoStreamIndex) ++frames;
+     }
+   }
+}
+
+bool ossimPredatorVideo::skipKlv()
+{
+   if(theKlvStreamIndex == -1) return false;
+   AVPacket        packet;
+   if(!isOpen()) return false;
+    adjustSeek();
+
+   while(av_read_frame(theFormatCtx, &packet)>=0)
+   {
+      if(packet.stream_index == theKlvStreamIndex) return true;
+   }
+   return false;
+}
+
+bool ossimPredatorVideo::skipFrame()
+{
+   AVPacket        packet;
+   if(!isOpen()) return false;
+   adjustSeek();
+
+   while(av_read_frame(theFormatCtx, &packet)>=0)
+   {
+      if(packet.stream_index == theVideoStreamIndex) return true;
+   }
+   return false;
+}
+
 void ossimPredatorVideo::adjustSeek()
 {
    //OpenThreads::ScopedLock<OpenThreads::Mutex> lock(theSeekMutex);

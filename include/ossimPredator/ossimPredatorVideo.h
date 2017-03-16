@@ -181,6 +181,9 @@ public:
     * information then you should use the nextFrame call.
     */
    ossimRefPtr<ossimPredatorVideo::KlvInfo> nextKlv();
+   bool skipKlv();
+   bool skipFrame();
+   void countFrames(ossim_uint32& frames, ossim_uint32& klvs);
    
    ossimRefPtr<ossimPredatorVideo::FrameInfo> nextFrame();
    
