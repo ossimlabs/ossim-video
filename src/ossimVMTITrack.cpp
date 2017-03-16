@@ -7,7 +7,7 @@ RTTI_DEF1(ossimVMTITrack, "ossimVMTITrack", ossimObject);
 
 ossimVMTITrack::ossimVMTITrack()
    :m_targetID(0),
-    m_trackStartTime(18446744073709551615),
+    m_trackStartTime(18446744073709551615UL),
     m_trackEndTime(0),
     m_trackFrameStart(OSSIM_DEFAULT_MAX_PIX_UINT32),
     m_trackFrameEnd(0),
@@ -133,11 +133,15 @@ geos::geom::Geometry* ossimVMTITrack::getCentroidTrack()
 geos::geom::Geometry* ossimVMTITrack::setGroundTrack(geos::geom::Geometry* source)
 {
   m_groundTrack = source;
+
+  return m_groundTrack;
 }
 
 geos::geom::Geometry* ossimVMTITrack::setCentroidTrack(geos::geom::Geometry* source)
 {
   m_centroidTrack = source;
+
+  return m_centroidTrack;
 }
 
 ossimString ossimVMTITrack::getGroundTrackWKT()const
