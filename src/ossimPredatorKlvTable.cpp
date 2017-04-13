@@ -1382,6 +1382,7 @@ bool ossimPredatorKlvTable::getVMTIBottomRightPixelNumber(ossim_uint32& bottomRi
 
 bool ossimPredatorKlvTable::getVMTIPointFromPixel(ossimDpt& point, ossim_uint32 index, ossim_uint32 pointtype)const
 {
+   bool result = true;
    ossim_uint32 pixel;
    ossim_uint32 frameWidth;
    getVMTIFrameWidth(frameWidth);
@@ -1396,9 +1397,17 @@ bool ossimPredatorKlvTable::getVMTIPointFromPixel(ossimDpt& point, ossim_uint32 
      case 2:
        getVMTIBottomRightPixelNumber(pixel, index);
        break;
+     default:
+        result = false;
+        break;
    }
-   point.x = pixel % frameWidth;
-   point.y = pixel / frameWidth;
+   if(result)
+   {
+      point.x = pixel % frameWidth;
+      point.y = pixel / frameWidth;
+   }
+
+   return result;
 }
 
 bool ossimPredatorKlvTable::getVMTIUnixMicroTime(ossim_uint64& time)const
