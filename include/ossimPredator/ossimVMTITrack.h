@@ -1,7 +1,9 @@
 // VMTI Track Object derived from VMTI KLV MISP ST 903
 
 #ifndef ossimVMTITrack_HEADER
-#define ossimVMTITrack_HEADER
+#define ossimVMTITrack_HEADER 1
+
+#include <ossimPredator/ossimPredatorExport.h>
 #include <ossim/base/ossimString.h>
 #include <ossim/base/ossimReferenced.h>
 #include <ossim/base/ossimDate.h>
@@ -17,7 +19,8 @@
 #include <geos/io/WKTWriter.h>
 #include <geos/util/GEOSException.h>
 
-class ossimVMTITrack : public ossimObject {
+class OSSIMPREDATOR_DLL ossimVMTITrack : public ossimObject
+{
 
 public:
   ossimVMTITrack();
