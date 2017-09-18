@@ -403,7 +403,6 @@ bool ossimPredatorVideo::skipFrame()
 
 void ossimPredatorVideo::adjustSeek()
 {
-   //OpenThreads::ScopedLock<OpenThreads::Mutex> lock(theSeekMutex);
    if(theSeekingFlag)
    {
       ossim_float64 adjustedToRelative = theSeekTarget;
@@ -616,7 +615,7 @@ ossim_float64 ossimPredatorVideo::videoClock()const
 
 bool ossimPredatorVideo::seekingFlag()const
 {
-   OpenThreads::ScopedLock<OpenThreads::Mutex> lock(theSeekMutex);
+   std::lock_guard<std::mutex> lock(theSeekMutex);
    return theSeekingFlag;
 }
 

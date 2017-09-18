@@ -2,11 +2,10 @@
 #define ossimPredatorThread_HEADER
 
 #include <OpenThreads/Thread>
-#include <OpenThreads/Mutex>
-#include <OpenThreads/ScopedLock>
 #include <OpenThreads/Block>
 #include "ossimPredatorApi.h"
 #include <ossimPredator/ossimPredatorExport.h>
+#include <mutex>
 class OSSIMPREDATOR_DLL ossimPredatorRefBlock : virtual public ossimReferenced,
                               public OpenThreads::Block
 {
@@ -40,7 +39,7 @@ public:
    
    void updateThreadBlock()
    {
-      OpenThreads::ScopedLock<OpenThreads::Mutex> lock(theFrameBufferMutex);
+      std::lock_guard<std::mutex> lock(theFrameBufferMutex);
       
       // set true if we need to fill the frame buffer
       theBlock->set( (theFrameBuffer.size() < theNumberOfFramesToBuffer));
@@ -53,7 +52,7 @@ protected:
    bool                                       theDoneFlag;
    bool                                       theStartThreadCalledFlag;
    ossimRefPtr<ossimPredatorVideo>            theVideo;
-   OpenThreads::Mutex                         theFrameBufferMutex;
+   std::mutex                                 theFrameBufferMutex;
    ossim_uint32                               theNumberOfFramesToBuffer;
    std::deque<ossimRefPtr<ossimPredatorVideo::FrameInfo> > theFrameBuffer;
 };
