@@ -2,9 +2,9 @@
 #include <ossim-video/ossimPredatorInit.h>
 #include <ossim/base/ossimRefPtr.h>
 #include <ossim/base/ossimFilename.h>
-#include <OpenThreads/Thread>
+#include <ossim/base/Thread.h>
 
-class TempThread : public OpenThreads::Thread
+class TempThread : public ossim::Thread
 {
 public:
    bool openVideo(ossimPredatorVideo* video)
@@ -16,6 +16,7 @@ public:
       ossimRefPtr<ossimPredatorVideo> video;
       while(true)
       {
+         interrupt();
          video = new ossimPredatorVideo();
          if(openVideo(video.get()))
          {

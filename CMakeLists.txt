@@ -26,15 +26,6 @@ else( FFMPEG_FOUND )
    message( FATAL_ERROR "Could not find required ffmpeg package!" )
 endif( FFMPEG_FOUND )
 
-# OpenThreads - Required:
-find_package( OpenThreads )
-if( OPENTHREADS_FOUND )
-   include_directories( ${OPENTHREADS_INCLUDE_DIR} )
-   set( dependentLibs ${dependentLibs} ${OPENTHREADS_LIBRARY} )
-else( OPENTHREADS_FOUND )
-   message( FATAL_ERROR "Could not find required OpenThreads package!" )
-endif( OPENTHREADS_FOUND )
-
 # Ossim - Required:
 find_package( ossim )
 if( OSSIM_FOUND )

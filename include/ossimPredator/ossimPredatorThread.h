@@ -1,25 +1,19 @@
 #ifndef ossimPredatorThread_HEADER
 #define ossimPredatorThread_HEADER
 
-#include <OpenThreads/Thread>
-#include <OpenThreads/Block>
 #include "ossimPredatorApi.h"
 #include <ossimPredator/ossimPredatorExport.h>
-#include <mutex>
-class OSSIMPREDATOR_DLL ossimPredatorRefBlock : virtual public ossimReferenced,
-                              public OpenThreads::Block
-{
-public:
-   ossimPredatorRefBlock()
-   {}
-};
+#include <ossim/base/Block.h>
+#include <ossim/base/Thread.h>
 
-class OSSIMPREDATOR_DLL ossimPredatorThread : public OpenThreads::Thread
+#include <mutex>
+
+class OSSIMPREDATOR_DLL ossimPredatorThread : public ossim::Thread
 {
 public:
    ossimPredatorThread()
    {
-      theBlock = new ossimPredatorRefBlock;
+      theBlock = std::make_shared<ossim::Block>();
       theStartThreadCalledFlag = false;
       theDoneFlag = false;
       theBlock->set(true);
@@ -30,7 +24,7 @@ public:
       theNumberOfFramesToBuffer = framesToBuffer;
    }
    virtual void run();
-   virtual int cancel();
+   virtual void cancel();
 
    ossimRefPtr<ossimPredatorVideo::FrameInfo> nextFrame();
    
@@ -48,7 +42,7 @@ public:
    
 protected:
    
-   ossimRefPtr<ossimPredatorRefBlock>         theBlock;
+   std::shared_ptr<ossim::Block>             theBlock;
    bool                                       theDoneFlag;
    bool                                       theStartThreadCalledFlag;
    ossimRefPtr<ossimPredatorVideo>            theVideo;
