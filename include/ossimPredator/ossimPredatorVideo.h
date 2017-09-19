@@ -4,13 +4,11 @@
 #include <ossim/base/ossimConstants.h>
 #include <ossim/base/ossimReferenced.h>
 #include <ossim/base/ossimRefPtr.h>
-#include <OpenThreads/Mutex>
-#include <OpenThreads/ScopedLock>
 #include <queue>
 #include <iostream>
 #include <ossimPredator/ossimPredatorExport.h>
 #include <ossimPredator/ossimPredatorKlvTable.h>
-
+#include <mutex>
 
 class OSSIMPREDATOR_DLL ossimPredatorVideo : public ossimReferenced
 {
@@ -267,7 +265,7 @@ protected:
    std::queue<ossimRefPtr<ossimPredatorVideo::TimestampKlv> > theKlvQueue;
    ossimRefPtr<ossimPredatorVideo::FrameInfo> theCurrentFrameInfo;
 
-   mutable OpenThreads::Mutex           theSeekMutex;
+   mutable std::mutex           theSeekMutex;
    ossim_float64                theSeekTarget;
    ossimPredatorVideo::SeekType theSeekTargetType;
    bool                         theSeekingFlag;

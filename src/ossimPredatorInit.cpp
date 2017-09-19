@@ -1,6 +1,6 @@
 #include <ossimPredator/ossimPredatorInit.h>
 #include <ossimPredator/ossimPredatorApi.h>
-#include <OpenThreads/Mutex>
+#include <mutex>
 ossimPredatorInit* ossimPredatorInit::theInstance = 0;
 
 extern "C"
@@ -10,7 +10,7 @@ int ffmpeg_lock_callback(void **mutex, enum AVLockOp op);
 
 int ffmpeg_lock_callback(void **mutex, enum AVLockOp op)
 {
-   static OpenThreads::Mutex m;
+   static std::mutex m;
 
    switch(op)
    {
@@ -21,12 +21,12 @@ int ffmpeg_lock_callback(void **mutex, enum AVLockOp op)
       }
       case AV_LOCK_OBTAIN:
       {
-         ((OpenThreads::Mutex*)(*mutex))->lock();
+         ((std::mutex*)(*mutex))->lock();
          break;
       }
       case AV_LOCK_RELEASE:
       {
-         ((OpenThreads::Mutex*)(*mutex))->unlock();
+         ((std::mutex*)(*mutex))->unlock();
         break;      
       }
       case AV_LOCK_DESTROY:
@@ -48,8 +48,8 @@ ossimPredatorInit::ossimPredatorInit()
 ossimPredatorInit* ossimPredatorInit::instance()
 {
    // synch the entry of instance
-   static OpenThreads::Mutex m;
-   OpenThreads::ScopedLock<OpenThreads::Mutex> lock(m);
+   static std::mutex m;
+   std::lock_guard<std::mutex> lock(m);
    if(!theInstance)
    {
       theInstance = new ossimPredatorInit;
