@@ -11,6 +11,7 @@ void ossimPredatorThread::run()
 //    int frameCount = 0;
    do
    {
+      interrupt();
       theBlock->block();
 
 //       std::cout << "FILLING BUFFER!!!!" << std::endl;
@@ -18,7 +19,7 @@ void ossimPredatorThread::run()
       {
          // do a yield to get round a peculiar thread hang when testCancel() is called 
          // in certain cirumstances - of which there is no particular pattern.
-         YieldCurrentThread();
+         ossim::Thread::yieldCurrentThread();
          firstTime = false;
       }
       ossimRefPtr<ossimPredatorVideo::FrameInfo> frameInfo = theVideo->nextFrame();
@@ -36,7 +37,7 @@ void ossimPredatorThread::run()
          theFrameBufferMutex.unlock();
       }
 //       updateThreadBlock();
-   } while (!testCancel() && !theDoneFlag);
+   } while (!theDoneFlag);
 //     std::cout << frameCount << std::endl;
 }
 
@@ -56,10 +57,8 @@ ossimRefPtr<ossimPredatorVideo::FrameInfo> ossimPredatorThread::nextFrame()
    return result;
 }
 
-int ossimPredatorThread::cancel()
+void ossimPredatorThread::cancel()
 {
-   int result = 0;
-
    if( isRunning() )
    {
       theDoneFlag = true;
@@ -72,12 +71,10 @@ int ossimPredatorThread::cancel()
          // commenting out debug info as it was cashing crash on exit, presumable
          // due to osg::notify or std::cout destructing earlier than this destructor.
          // osg::notify(osg::DEBUG_INFO)<<"Waiting for DatabasePager to cancel"<<std::endl;
-         OpenThreads::Thread::YieldCurrentThread();
+         ossim::Thread::yieldCurrentThread();
       }
       theStartThreadCalledFlag = false;
    }
-   
-   return result;
 }
 
 bool ossimPredatorThread::openPredator(const ossimFilename& file)
