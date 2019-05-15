@@ -17,6 +17,15 @@ INCLUDE_DIRECTORIES(${${PROJECT_NAME}_SOURCE_DIR}/include)
 # Stores list of libs to link with. Initialized throughout.
 set( dependentLibs )
 
+# GEOS - Required:
+find_package( GEOS )
+if( GEOS_FOUND )
+   include_directories( ${GEOS_INCLUDE_DIR} )
+   set( dependentLibs ${dependentLibs} ${GEOS_LIBRARY} )
+else( GEOS_FOUND )
+   message( FATAL_ERROR "Could not find required geos package!" )
+endif( GEOS_FOUND )
+
 # FFMPEG - Required:
 find_package( FFmpeg )
 if( FFMPEG_FOUND )
