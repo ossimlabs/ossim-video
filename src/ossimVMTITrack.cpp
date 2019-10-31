@@ -3,31 +3,112 @@
 #include <iomanip>
 #include <sstream>
 
+#include <geos_c.h>
+
 RTTI_DEF1(ossimVMTITrack, "ossimVMTITrack", ossimObject);
 
-ossimVMTITrack::ossimVMTITrack()
-   :m_targetID(0),
-    m_trackStartTime(18446744073709551615UL),
-    m_trackEndTime(0),
-    m_trackFrameStart(OSSIM_DEFAULT_MAX_PIX_UINT32),
-    m_trackFrameEnd(0),
-    m_targetMinIntensity(FLT_MAX),
-    m_targetMaxIntensity(0.0),
-    m_minGsd(FLT_MAX),
-    m_maxGsd(0.0), 
-    m_klvTrackMetadata(ossimString("[\n\t\t\t\t")),
-    m_init(true)
+class ossimVMTITrackPrivate
 {
-    m_groundTrack = 0;
-    m_centroidTrack = 0;
+  public:
+    friend class ossimVMTITrack;
+
+    ossimVMTITrackPrivate() : m_groundTrack(0),
+                              m_centroidTrack(0),
+                              m_reader(GEOSWKTReader_create()),
+                              m_writer(GEOSWKTWriter_create())
+    {
+    }
+    virtual ~ossimVMTITrackPrivate()
+    {
+      deleteGeoms();
+      if (m_reader)
+        GEOSWKTReader_destroy(m_reader);
+      if (m_writer)
+        GEOSWKTWriter_destroy(m_writer);
+      m_reader = 0;
+      m_writer = 0;
+    }
+    void deleteGeoms()
+    {
+      deleteGround();
+      deleteCentroid();
+    }
+    void deleteGround()
+    {
+      if (m_groundTrack)
+      {
+        GEOSGeom_destroy(m_groundTrack);
+      }
+      m_groundTrack = 0;
+    }
+    void deleteCentroid()
+    {
+      if (m_centroidTrack)
+      {
+        GEOSGeom_destroy(m_centroidTrack);
+      }
+      m_centroidTrack = 0;
+    }
+    void setGroundTrack(GEOSGeometry *geom)
+    {
+      if (geom != m_groundTrack)
+      {
+        deleteGround();
+        m_groundTrack = geom;
+      }
+    }
+    void setCentroidTrack(GEOSGeometry *geom)
+    {
+      if (geom != m_centroidTrack)
+      {
+        deleteCentroid();
+        m_centroidTrack = geom;
+      }
+    }
+    void getGeomWkt(ossimString &result, GEOSGeometry *geom)const
+    {
+      result = "";
+      if (geom)
+      {
+        if (m_writer)
+        {
+          char *str = GEOSWKTWriter_write(m_writer, geom);
+          if (str)
+          {
+            result = str;
+            GEOSFree(str);
+          }
+        }
+      }
+    }
+public:
+    GEOSGeometry  *m_groundTrack;
+    GEOSGeometry  *m_centroidTrack;
+    GEOSWKTReader *m_reader;
+    GEOSWKTWriter *m_writer;
+};
+
+ossimVMTITrack::ossimVMTITrack()
+    : m_targetID(0),
+      m_trackStartTime(18446744073709551615UL),
+      m_trackEndTime(0),
+      m_trackFrameStart(OSSIM_DEFAULT_MAX_PIX_UINT32),
+      m_trackFrameEnd(0),
+      m_targetMinIntensity(FLT_MAX),
+      m_targetMaxIntensity(0.0),
+      m_minGsd(FLT_MAX),
+      m_maxGsd(0.0),
+      m_klvTrackMetadata(ossimString("[\n\t\t\t\t")),
+      m_init(true),
+      m_vmtiTrackPrivate(new ossimVMTITrackPrivate())
+{
 }
 
 ossimVMTITrack::~ossimVMTITrack()
 {
-    delete m_groundTrack;
-    delete m_centroidTrack;
-    m_groundTrack = 0;
-    m_centroidTrack = 0;
+  if (m_vmtiTrackPrivate)
+    delete m_vmtiTrackPrivate;
+  m_vmtiTrackPrivate = 0;
 }
 
 /*
@@ -120,62 +201,88 @@ void ossimVMTITrack::updateKlvTrackMetadata(const ossimString append, bool data)
   if (m_init) m_init = false;
 }
 
-geos::geom::Geometry* ossimVMTITrack::getGroundTrack()
-{
-  return m_groundTrack;
-}
-
-geos::geom::Geometry* ossimVMTITrack::getCentroidTrack()
-{
-  return m_centroidTrack;
-}
-
-geos::geom::Geometry* ossimVMTITrack::setGroundTrack(geos::geom::Geometry* source)
-{
-  m_groundTrack = source;
-
-  return m_groundTrack;
-}
-
-geos::geom::Geometry* ossimVMTITrack::setCentroidTrack(geos::geom::Geometry* source)
-{
-  m_centroidTrack = source;
-
-  return m_centroidTrack;
-}
-
 ossimString ossimVMTITrack::getGroundTrackWKT()const
 {
-  ossimString result = "";
-  if(m_groundTrack)
-  {
-    geos::io::WKTWriter writer;
-    try
-    {
-      result = writer.write(m_groundTrack);
-    }
-    catch(...)
-    {
-    }
-  }
+  ossimString result;
+
+  m_vmtiTrackPrivate->getGeomWkt(result, m_vmtiTrackPrivate->m_groundTrack);
+
   return result;
 }
 
-ossimString ossimVMTITrack::getCentroidWKT()const
+ossimString ossimVMTITrack::getCentroidWKT() const 
 {
-  ossimString result = "";
-  if(m_centroidTrack)
+  ossimString result;
+
+  m_vmtiTrackPrivate->getGeomWkt(result, m_vmtiTrackPrivate->m_centroidTrack);
+
+  return result;
+}
+
+void ossimVMTITrack::getGroundTrackWKT(ossimString &result) const
+{
+  m_vmtiTrackPrivate->getGeomWkt(result, m_vmtiTrackPrivate->m_groundTrack);
+}
+
+void ossimVMTITrack::getCentroidWKT(ossimString &result) const
+{
+  m_vmtiTrackPrivate->getGeomWkt(result, m_vmtiTrackPrivate->m_centroidTrack);
+}
+
+void ossimVMTITrack::addToGroundTrack(const ossimString &wktString)
+{
+  GEOSGeometry *groundTrack = GEOSWKTReader_read(m_vmtiTrackPrivate->m_reader, wktString.c_str());
+
+  if (groundTrack)
   {
-    geos::io::WKTWriter writer;
-    try
+    if (m_vmtiTrackPrivate->m_groundTrack)
     {
-      result = writer.write(m_centroidTrack);
+      GEOSGeometry *unionGeom = GEOSUnion(groundTrack, m_vmtiTrackPrivate->m_groundTrack);
+      if(unionGeom)
+      {
+        m_vmtiTrackPrivate->setGroundTrack(unionGeom);
+      }
+
+      GEOSGeom_destroy(groundTrack);
     }
-    catch(...)
+    else
     {
+      m_vmtiTrackPrivate->setGroundTrack(groundTrack);
     }
   }
-  return result;
+}
+
+void ossimVMTITrack::addToCentroidTrack(const ossimString &wktString)
+{
+  GEOSGeometry *centroidTrack = GEOSWKTReader_read(m_vmtiTrackPrivate->m_reader, wktString.c_str());
+
+  if (centroidTrack)
+  {
+    if (m_vmtiTrackPrivate->m_centroidTrack)
+    {
+      GEOSGeometry *unionGeom = GEOSUnion(centroidTrack, m_vmtiTrackPrivate->m_centroidTrack);
+      if (unionGeom)
+      {
+        m_vmtiTrackPrivate->setCentroidTrack(unionGeom);
+      }
+
+      GEOSGeom_destroy(centroidTrack);
+    }
+    else
+    {
+      m_vmtiTrackPrivate->setCentroidTrack(centroidTrack);
+    }
+  }
+}
+
+void ossimVMTITrack::clearGroundTrack()
+{
+  m_vmtiTrackPrivate->deleteGround();
+}
+
+void ossimVMTITrack::clearCentroidTrack()
+{
+  m_vmtiTrackPrivate->deleteCentroid();
 }
 
 ossimString ossimVMTITrack::getDate(const ossim_uint64& epoc) const
