@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.16...3.26)
+
 PROJECT(ossim-video)
 
 Message("################## Setting up ossim-video library #########################")
@@ -5,12 +7,6 @@ Message("################## Setting up ossim-video library #####################
 INCLUDE(OssimVersion)
 INCLUDE(OssimUtilities)
 INCLUDE(OssimCommonVariables)
-
-IF(NOT APPLE)
-  cmake_minimum_required(VERSION 2.6)
-ELSE(NOT APPLE)
-  cmake_minimum_required(VERSION 2.8)
-ENDIF(NOT APPLE)
 
 INCLUDE_DIRECTORIES(${${PROJECT_NAME}_SOURCE_DIR}/include)
 
