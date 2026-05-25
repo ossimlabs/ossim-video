@@ -4,13 +4,80 @@
 #ifndef EINVAL
 #define EINVAL 0
 #endif
+extern "C"
+{
 #include <libavutil/avutil.h>
+#include <libavutil/imgutils.h>
 #include <libavformat/avformat.h>
 #include <libavformat/avio.h>
 #include <libavcodec/avcodec.h>
+}
 #include <iostream>
 #include <algorithm>
 #include <iomanip>
+
+namespace
+{
+   AVCodecParameters* streamCodecParameters(AVFormatContext* formatCtx, ossim_int32 streamIndex)
+   {
+      return formatCtx->streams[streamIndex]->codecpar;
+   }
+
+   AVMediaType streamCodecType(AVFormatContext* formatCtx, ossim_int32 streamIndex)
+   {
+      return streamCodecParameters(formatCtx, streamIndex)->codec_type;
+   }
+
+   void unrefPacket(AVPacket* packet)
+   {
+      av_packet_unref(packet);
+   }
+
+   int decodeVideoPacket(AVCodecContext* codecCtx, AVFrame* frame, int* frameFinished, AVPacket* packet)
+   {
+      *frameFinished = 0;
+      int result = avcodec_send_packet(codecCtx, packet);
+      if(result < 0)
+      {
+         return result;
+      }
+
+      result = avcodec_receive_frame(codecCtx, frame);
+      if(result == AVERROR(EAGAIN) || result == AVERROR_EOF)
+      {
+         return 0;
+      }
+      if(result < 0)
+      {
+         return result;
+      }
+
+      *frameFinished = 1;
+      return packet->size;
+   }
+
+   ossimString streamDescription(AVFormatContext* formatCtx, ossim_int32 streamIndex)
+   {
+      AVCodecContext* codecCtx = avcodec_alloc_context3(0);
+      if(!codecCtx)
+      {
+         return "";
+      }
+
+      if(avcodec_parameters_to_context(codecCtx, streamCodecParameters(formatCtx, streamIndex)) < 0)
+      {
+         avcodec_free_context(&codecCtx);
+         return "";
+      }
+
+      static const int BUF_SIZE = 256;
+      char buf[BUF_SIZE];
+      avcodec_string(buf, sizeof(buf), codecCtx, 0);
+      avcodec_free_context(&codecCtx);
+
+      return ossimString(buf);
+   }
+}
 
 enum ossimPredatorMediaType
 {
@@ -81,36 +148,31 @@ bool ossimPredatorVideo::open(const ossimFilename& videoFile)
   {
      return false; // Couldn't find stream information
   }
-   static const int BUF_SIZE = 256;
   ossim_int32 i = 0;
    ossim_int32 klvStream = -1;
-   char buf[BUF_SIZE];
-   int is_output = 1;      
-
    ossim_int32 lastDataStream = -1;
    ossim_int32 lastAudioStream = -1;
   for(i=0; i<(ossim_int32)theFormatCtx->nb_streams; i++)
   {
-     avcodec_string(buf, sizeof(buf), theFormatCtx->streams[i]->codec, is_output);
+     ossimString testBuf = streamDescription(theFormatCtx, i);
 
     // std::cout  << "START TIME = " << theFormatCtx->start_time << std::endl;
     // std::cout << "CODEC TYPE === "  << theFormatCtx->streams[i]->codec->codec_type << std::endl;
-     if((int)theFormatCtx->streams[i]->codec->codec_type==(int)ossimPredator_AVMEDIA_TYPE_VIDEO &&
+     if((int)streamCodecType(theFormatCtx, i)==(int)ossimPredator_AVMEDIA_TYPE_VIDEO &&
         theVideoStreamIndex < 0)
      {
         theVideoStreamIndex=i;
      }
-     else if((static_cast<int>(theFormatCtx->streams[i]->codec->codec_type)==static_cast<int>(ossimPredator_AVMEDIA_TYPE_DATA))&&
+     else if((static_cast<int>(streamCodecType(theFormatCtx, i))==static_cast<int>(ossimPredator_AVMEDIA_TYPE_DATA))&&
              (lastDataStream==-1))
      {
         lastDataStream = i;
      }
-     else if((static_cast<int>(theFormatCtx->streams[i]->codec->codec_type)==static_cast<int>(ossimPredator_AVMEDIA_TYPE_AUDIO))&&
+     else if((static_cast<int>(streamCodecType(theFormatCtx, i))==static_cast<int>(ossimPredator_AVMEDIA_TYPE_AUDIO))&&
              (lastDataStream==-1))
      {
         lastAudioStream = i;
      }
-     ossimString testBuf(buf);
      testBuf = testBuf.upcase();
      //std::cout << "TESTING BUFFER = " << testBuf << std::endl;
      if(testBuf.contains("KLVA"))
@@ -167,35 +229,49 @@ bool ossimPredatorVideo::open(const ossimFilename& videoFile)
 //std::cout << "KLV STREAM IDX!!!! ===== " << theKlvStreamIndex << std::endl;
   if(theKlvStreamIndex != -1)
   {
+#if LIBAVFORMAT_VERSION_MAJOR < 59
      theFormatCtx->streams[theKlvStreamIndex]->need_parsing = AVSTREAM_PARSE_NONE;
+#endif
   }
-  theImageWidth  = theFormatCtx->streams[theVideoStreamIndex]->codec->width;
-  theImageHeight = theFormatCtx->streams[theVideoStreamIndex]->codec->height;
+  theImageWidth  = streamCodecParameters(theFormatCtx, theVideoStreamIndex)->width;
+  theImageHeight = streamCodecParameters(theFormatCtx, theVideoStreamIndex)->height;
   theVideoFrameRate = av_q2d(theFormatCtx->streams[theVideoStreamIndex]->r_frame_rate);
   theVideoFrame = av_frame_alloc();
   theRgbFrame   = av_frame_alloc();
   
-  theVideoCodecCtx=theFormatCtx->streams[theVideoStreamIndex]->codec;
-  theVideoDecoder=avcodec_find_decoder(theVideoCodecCtx->codec_id);
+  theVideoDecoder=avcodec_find_decoder(streamCodecParameters(theFormatCtx, theVideoStreamIndex)->codec_id);
+  if(!theVideoDecoder)
+  {
+     close();
+     return false; // Could not find codec
+  }
+  theVideoCodecCtx=avcodec_alloc_context3(theVideoDecoder);
+  if(!theVideoCodecCtx ||
+     avcodec_parameters_to_context(theVideoCodecCtx,
+                                   streamCodecParameters(theFormatCtx, theVideoStreamIndex)) < 0)
+  {
+     close();
+     return false; // Could not allocate codec context
+  }
   if(avcodec_open2(theVideoCodecCtx, theVideoDecoder, NULL)<0)
   {
      close();
      return false; // Could not open codec
   }
   
-  theBufferSizeInBytes = avpicture_get_size(AV_PIX_FMT_RGB24,
-                                            theImageWidth,
-                                            theImageHeight);
+  theBufferSizeInBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24,
+                                                  theImageWidth,
+                                                  theImageHeight,
+                                                  1);
   theBuffer = (ossim_uint8 *)av_malloc(theBufferSizeInBytes);
 
-  // Assign appropriate parts of buffer to image planes in theRgbFrame
-  // Note that pFrameRGB is an AVFrame, but AVFrame is a superset
-  // of AVPicture
-  avpicture_fill((AVPicture *)theRgbFrame,
-                 theBuffer,
-                 AV_PIX_FMT_RGB24,
-                 theImageWidth,
-                 theImageHeight);
+  av_image_fill_arrays(theRgbFrame->data,
+                       theRgbFrame->linesize,
+                       theBuffer,
+                       AV_PIX_FMT_RGB24,
+                       theImageWidth,
+                       theImageHeight,
+                       1);
 
   theCurrentFrameInfo = new FrameInfo;
   theCurrentFrameInfo->setImageRect(ossimIrect(0,
@@ -213,11 +289,11 @@ void ossimPredatorVideo::close()
 
    if(theVideoFrame)
    {
-      av_free(theVideoFrame);
+      av_frame_free(&theVideoFrame);
    }
    if(theRgbFrame)
    {
-      av_free(theRgbFrame);
+      av_frame_free(&theRgbFrame);
    }
    if(theBuffer)
    {
@@ -229,7 +305,7 @@ void ossimPredatorVideo::close()
    }
    if(theVideoCodecCtx)
    {
-      avcodec_close(theVideoCodecCtx);
+      avcodec_free_context(&theVideoCodecCtx);
    }
    if(theFormatCtx)
    {
@@ -349,13 +425,13 @@ ossimRefPtr<ossimPredatorVideo::KlvInfo> ossimPredatorVideo::nextKlv()
                klvInfo->setTime(unixT*1e-6 - theFirstKlvTime);
                theVideoClock = klvInfo->time();
                klvInfo->setTable(klvTable.get());
-               av_free_packet(&packet);
+               unrefPacket(&packet);
                return klvInfo.release();
             }
             klvTable = 0;
          }
       }
-      av_free_packet(&packet);
+      unrefPacket(&packet);
    }
    return 0;
 }
@@ -370,6 +446,7 @@ void ossimPredatorVideo::countFrames(ossim_uint32& frames, ossim_uint32& klvs)
      {
        if(packet.stream_index == theKlvStreamIndex) ++klvs;
        if(packet.stream_index == theVideoStreamIndex) ++frames;
+       unrefPacket(&packet);
      }
    }
 }
@@ -383,7 +460,12 @@ bool ossimPredatorVideo::skipKlv()
 
    while(av_read_frame(theFormatCtx, &packet)>=0)
    {
-      if(packet.stream_index == theKlvStreamIndex) return true;
+      if(packet.stream_index == theKlvStreamIndex)
+      {
+         unrefPacket(&packet);
+         return true;
+      }
+      unrefPacket(&packet);
    }
    return false;
 }
@@ -396,7 +478,12 @@ bool ossimPredatorVideo::skipFrame()
 
    while(av_read_frame(theFormatCtx, &packet)>=0)
    {
-      if(packet.stream_index == theVideoStreamIndex) return true;
+      if(packet.stream_index == theVideoStreamIndex)
+      {
+         unrefPacket(&packet);
+         return true;
+      }
+      unrefPacket(&packet);
    }
    return false;
 }
@@ -439,7 +526,7 @@ void ossimPredatorVideo::adjustSeek()
       {
          // ERROR
       }
-      if(theVideoStreamIndex>=0) avcodec_flush_buffers(theFormatCtx->streams[theVideoStreamIndex]->codec);
+      if(theVideoStreamIndex>=0) avcodec_flush_buffers(theVideoCodecCtx);
       flushQueues();
    }
    theSeekingFlag = false;
@@ -503,10 +590,10 @@ ossimRefPtr<ossimPredatorVideo::FrameInfo> ossimPredatorVideo::nextFrame()
 //                                 &frameFinished, 
 //                                 packet.data,
 //                                 packet.size) > 0)
-           if(avcodec_decode_video2(theVideoCodecCtx,
-                                    theVideoFrame,
-                                    &frameFinished, 
-                                    &packet) > 0)
+           if(decodeVideoPacket(theVideoCodecCtx,
+                                theVideoFrame,
+                                &frameFinished,
+                                &packet) >= 0)
             {
                if(firstFrame)
                {
@@ -534,9 +621,9 @@ ossimRefPtr<ossimPredatorVideo::FrameInfo> ossimPredatorVideo::nextFrame()
                   {
                      int dstW = theImageWidth;
                      int dstH = theImageHeight;
-                     theImageConvertContext = sws_getContext(theFormatCtx->streams[theVideoStreamIndex]->codec->width, 
-                                                             theFormatCtx->streams[theVideoStreamIndex]->codec->height, 
-                                                             theFormatCtx->streams[theVideoStreamIndex]->codec->pix_fmt, 
+                     theImageConvertContext = sws_getContext(theVideoCodecCtx->width,
+                                                             theVideoCodecCtx->height,
+                                                             theVideoCodecCtx->pix_fmt,
                                                              dstW,
                                                              dstH,
                                                              AV_PIX_FMT_RGB24,
@@ -547,7 +634,7 @@ ossimRefPtr<ossimPredatorVideo::FrameInfo> ossimPredatorVideo::nextFrame()
                   {
                      sws_scale(theImageConvertContext, theVideoFrame->data, 
                                theVideoFrame->linesize, 0, 
-                               theFormatCtx->streams[theVideoStreamIndex]->codec->height, 
+                               theVideoCodecCtx->height,
                                theRgbFrame->data, theRgbFrame->linesize);               
                   }
 #if 0
@@ -583,7 +670,7 @@ ossimRefPtr<ossimPredatorVideo::FrameInfo> ossimPredatorVideo::nextFrame()
                      }
                   }
                   theCurrentFrameInfo->setVideoFrameTime(theVideoClock);
-                  av_free_packet(&packet);
+                  unrefPacket(&packet);
                   
                   return theCurrentFrameInfo.get();
                }
@@ -593,7 +680,7 @@ ossimRefPtr<ossimPredatorVideo::FrameInfo> ossimPredatorVideo::nextFrame()
               //  std::cout << "ERROR!!!!!!!!!!!!!!!!!!" << std::endl;
            }
       }
-      av_free_packet(&packet);
+      unrefPacket(&packet);
    }
    return 0;
 }
@@ -686,8 +773,7 @@ void ossimPredatorVideo::debugScan()
          }
 //         avcodec_decode_video(theVideoCodecCtx, theVideoFrame, &frameFinished, 
 //                              packet.data, packet.size);
-         avcodec_decode_video2(theVideoCodecCtx, theVideoFrame, &frameFinished, 
-                              &packet);
+         decodeVideoPacket(theVideoCodecCtx, theVideoFrame, &frameFinished, &packet);
          if(packet.dts == MY_NOPTS_VALUE 
             && firstFramePts != MY_NOPTS_VALUE)
          {
@@ -719,7 +805,7 @@ void ossimPredatorVideo::debugScan()
          }
          
       }
-      av_free_packet(&packet);
+      unrefPacket(&packet);
    }
 //    std::cout << "klvCount   = " << klvCount << std::endl;
 //    std::cout << "videoCount = " << videoCount << std::endl; 
@@ -740,7 +826,7 @@ ossim_float64 ossimPredatorVideo::synchronizeVideo(AVFrame *src_frame, ossim_flo
       pts = theVideoClock;
    }
    /* update the video clock */
-   frame_delay = av_q2d(theFormatCtx->streams[theVideoStreamIndex]->codec->time_base);
+   frame_delay = av_q2d(theVideoCodecCtx->time_base);
 
    /* if we are repeating a frame, adjust clock accordingly */
    frame_delay += src_frame->repeat_pict * (frame_delay * 0.5);

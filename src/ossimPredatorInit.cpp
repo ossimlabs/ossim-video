@@ -5,9 +5,12 @@ ossimPredatorInit* ossimPredatorInit::theInstance = 0;
 
 extern "C"
 {
+#if LIBAVCODEC_VERSION_MAJOR < 59
 int ffmpeg_lock_callback(void **mutex, enum AVLockOp op);
+#endif
 }
 
+#if LIBAVCODEC_VERSION_MAJOR < 59
 int ffmpeg_lock_callback(void **mutex, enum AVLockOp op)
 {
    static std::mutex m;
@@ -39,6 +42,7 @@ int ffmpeg_lock_callback(void **mutex, enum AVLockOp op)
 
    return 0;
 }
+#endif
 
 ossimPredatorInit::ossimPredatorInit()
 {
@@ -53,12 +57,18 @@ ossimPredatorInit* ossimPredatorInit::instance()
    if(!theInstance)
    {
       theInstance = new ossimPredatorInit;
+#if LIBAVCODEC_VERSION_MAJOR < 59
       av_lockmgr_register(&ffmpeg_lock_callback);
+#endif
       // now synch the critcal section
       //
+#if LIBAVCODEC_VERSION_MAJOR < 59
      avcodec_register_all();
+#endif
      avdevice_register_all();
+#if LIBAVFORMAT_VERSION_MAJOR < 59
      av_register_all();
+#endif
 
       av_log_set_level(AV_LOG_QUIET);
    }

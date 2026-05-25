@@ -249,7 +249,7 @@ protected:
    AVFrame         *theVideoFrame; 
    AVFrame         *theRgbFrame; 
    AVCodecContext  *theVideoCodecCtx;
-   AVCodec         *theVideoDecoder;
+   const AVCodec   *theVideoDecoder;
    ossim_uint8     *theBuffer;
    ossim_uint32     theBufferSizeInBytes;
    ossim_float64    theVideoFrameRate;
