@@ -422,6 +422,7 @@ ossimPredatorKlvTable::Node ossimPredatorKlvTable::convertValue(int id, const st
   return result;
 }
 
+#if 0 /* Not called: "unused-function" warning fix. */ 
 static void printHex(const std::vector<ossim_uint8>& buf)
 {
    ossim_uint32 idx = 0;
@@ -435,6 +436,7 @@ static void printHex(const std::vector<ossim_uint8>& buf)
       ++idx;
    }
 }
+#endif
 
 bool ossimPredatorKlvTable::addKeys(const std::vector<ossim_uint8>& buffer)
 {
@@ -765,7 +767,7 @@ void ossimPredatorKlvTable::addAbsoluteKeyDefinitions(const std::vector<ossim_ui
         break;
       }
       ossimPredatorKlvTable::Node node;
-      ossim_uint32 saveIdx = currentIdx;
+      // ossim_uint32 saveIdx = currentIdx;
       ossim_int32 klvIndex = findPredatorKlvIndex(&bufPtr[currentIdx]);
       if(klvIndex >= 0)
       {
@@ -1290,7 +1292,8 @@ bool ossimPredatorKlvTable::getTargetID(ossim_uint32& targetid, ossim_uint32 ind
    return result;
 }
 
-bool ossimPredatorKlvTable::getVMTITargetIntensity(ossim_uint32& targetIntensity, ossim_uint32 index)const
+bool ossimPredatorKlvTable::getVMTITargetIntensity(ossim_uint32& targetIntensity,
+                                                   ossim_uint32 /* index */)const
 {
    bool result = false;
    ossimString targetIntensityString = valueAsString(KLV_KEY_VMTI_VTARGET_TARGET_INTENSITY);
@@ -1938,12 +1941,11 @@ int ossimPredatorKlvTable::findPredatorKlvIndexByKey(ossim_uint32 key)const
 {
    ossim_int32 idx = 0;
    
-
    while(OSSIM_PREDATOR_UDS_TABLE[idx].theId != -1)
    {
-      if(key == OSSIM_PREDATOR_UDS_TABLE[idx].theId)
+      if((int)key == OSSIM_PREDATOR_UDS_TABLE[idx].theId)
       {
-        return idx;
+         return idx;
       }
       ++idx;
    }
